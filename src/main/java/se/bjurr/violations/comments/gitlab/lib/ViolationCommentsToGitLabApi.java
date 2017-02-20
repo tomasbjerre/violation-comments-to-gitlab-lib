@@ -4,10 +4,8 @@ import static java.lang.Integer.MAX_VALUE;
 import static se.bjurr.violations.comments.lib.CommentsCreator.createComments;
 
 import java.util.List;
-
 import org.gitlab.api.AuthMethod;
 import org.gitlab.api.TokenType;
-
 import se.bjurr.violations.comments.lib.model.CommentsProvider;
 import se.bjurr.violations.lib.model.Violation;
 
