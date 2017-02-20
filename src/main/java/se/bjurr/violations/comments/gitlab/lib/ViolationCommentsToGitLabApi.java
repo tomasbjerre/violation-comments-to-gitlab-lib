@@ -4,8 +4,10 @@ import static java.lang.Integer.MAX_VALUE;
 import static se.bjurr.violations.comments.lib.CommentsCreator.createComments;
 
 import java.util.List;
+
 import org.gitlab.api.AuthMethod;
 import org.gitlab.api.TokenType;
+
 import se.bjurr.violations.comments.lib.model.CommentsProvider;
 import se.bjurr.violations.lib.model.Violation;
 
@@ -15,7 +17,6 @@ public class ViolationCommentsToGitLabApi {
   }
 
   private List<Violation> violations;
-  private boolean createSingleFileComments = true;
   private boolean createCommentWithAllSingleFileComments = false;
   private boolean commentOnlyChangedContent = false;
   private String hostUrl;
@@ -98,12 +99,6 @@ public class ViolationCommentsToGitLabApi {
     return this;
   }
 
-  public ViolationCommentsToGitLabApi setCreateSingleFileComments(
-      boolean createSingleFileComments) {
-    this.createSingleFileComments = createSingleFileComments;
-    return this;
-  }
-
   public ViolationCommentsToGitLabApi setCreateCommentWithAllSingleFileComments(
       boolean createCommentWithAllSingleFileComments) {
     this.createCommentWithAllSingleFileComments = createCommentWithAllSingleFileComments;
@@ -124,10 +119,6 @@ public class ViolationCommentsToGitLabApi {
 
   public boolean getCreateCommentWithAllSingleFileComments() {
     return createCommentWithAllSingleFileComments;
-  }
-
-  public boolean getCreateSingleFileComments() {
-    return createSingleFileComments;
   }
 
   public void toPullRequest() throws Exception {
