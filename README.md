@@ -6,7 +6,7 @@ It uses [Violation Comments Lib](https://github.com/tomasbjerre/violation-commen
 
 ## Usage
 This software can be used:
- * With a [Jenkins plugin](https://github.com/jenkinsci/violation-comments-to-gitlab).
+ * With a [Jenkins plugin](https://github.com/jenkinsci/violation-comments-to-gitlab-plugin).
 
 ## Developer instructions
 
