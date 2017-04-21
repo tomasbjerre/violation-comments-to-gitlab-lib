@@ -42,7 +42,7 @@ public class GitLabCommentsProvider implements CommentsProvider {
     boolean ignoreCertificateErrors = violationCommentsToGitLabApi.isIgnoreCertificateErrors();
     gitlabApi.ignoreCertificateErrors(ignoreCertificateErrors);
 
-    Integer projectId = violationCommentsToGitLabApi.getProjectId();
+    String projectId = violationCommentsToGitLabApi.getProjectId();
     try {
       project = gitlabApi.getProject(projectId);
     } catch (IOException e) {

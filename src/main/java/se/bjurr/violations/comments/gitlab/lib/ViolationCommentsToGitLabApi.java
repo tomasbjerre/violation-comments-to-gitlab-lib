@@ -22,7 +22,7 @@ public class ViolationCommentsToGitLabApi {
   private TokenType tokenType;
   private AuthMethod method;
   private boolean ignoreCertificateErrors;
-  private Integer projectId;
+  private String projectId;
   private Integer mergeRequestId;
 
   public List<Violation> getViolations() {
@@ -79,11 +79,11 @@ public class ViolationCommentsToGitLabApi {
     return this;
   }
 
-  public Integer getProjectId() {
+  public String getProjectId() {
     return projectId;
   }
 
-  public ViolationCommentsToGitLabApi setProjectId(Integer projectId) {
+  public ViolationCommentsToGitLabApi setProjectId(String projectId) {
     this.projectId = projectId;
     return this;
   }
