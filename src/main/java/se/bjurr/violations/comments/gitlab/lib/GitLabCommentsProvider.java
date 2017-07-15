@@ -2,6 +2,7 @@ package se.bjurr.violations.comments.gitlab.lib;
 
 import static se.bjurr.violations.comments.lib.CommentsCreator.FINGERPRINT;
 import static se.bjurr.violations.comments.lib.PatchParser.findLineToComment;
+import static se.bjurr.violations.comments.lib.utils.CommentsUtils.escapeHTML;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -150,21 +151,6 @@ public class GitLabCommentsProvider implements CommentsProvider {
   @Override
   public boolean shouldCreateCommentWithAllSingleFileComments() {
     return violationCommentsToGitLabApi.getCreateCommentWithAllSingleFileComments();
-  }
-
-  private String escapeHTML(String s) {
-    StringBuilder out = new StringBuilder(Math.max(16, s.length()));
-    for (int i = 0; i < s.length(); i++) {
-      char c = s.charAt(i);
-      if (c > 127 || c == '"' || c == '<' || c == '>' || c == '&') {
-        out.append("&#");
-        out.append((int) c);
-        out.append(';');
-      } else {
-        out.append(c);
-      }
-    }
-    return out.toString();
   }
 
   @Override
