@@ -25,6 +25,7 @@ public class ViolationCommentsToGitLabApi {
   private String projectId;
   private Integer mergeRequestId;
   private boolean shouldKeepOldComments;
+  private boolean shouldSetWIP;
 
   public List<Violation> getViolations() {
     return violations;
@@ -132,5 +133,14 @@ public class ViolationCommentsToGitLabApi {
 
   public boolean getShouldKeepOldComments() {
     return shouldKeepOldComments;
+  }
+
+  public ViolationCommentsToGitLabApi setShouldSetWIP(boolean shouldSetWIP) {
+    this.shouldSetWIP = shouldSetWIP;
+    return this;
+  }
+
+  public boolean getShouldSetWIP() {
+    return shouldSetWIP;
   }
 }

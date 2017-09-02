@@ -5,6 +5,7 @@ import static se.bjurr.violations.comments.lib.PatchParser.findLineToComment;
 import static se.bjurr.violations.comments.lib.utils.CommentsUtils.escapeHTML;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import org.gitlab.api.AuthMethod;
@@ -63,6 +64,7 @@ public class GitLabCommentsProvider implements CommentsProvider {
 
   @Override
   public void createCommentWithAllSingleFileComments(String comment) {
+    addingComment();
     try {
       gitlabApi.createNote(mergeRequest, comment);
     } catch (final IOException e) {
@@ -70,8 +72,40 @@ public class GitLabCommentsProvider implements CommentsProvider {
     }
   }
 
+  private void addingComment() {
+    if (this.violationCommentsToGitLabApi.getShouldSetWIP()) {
+      final String currentTitle = mergeRequest.getTitle();
+      if (currentTitle.startsWith("WIP:")) {
+        return;
+      }
+      final Serializable projectId = violationCommentsToGitLabApi.getProjectId();
+      final Integer mergeRequestId = violationCommentsToGitLabApi.getMergeRequestId();
+      final String targetBranch = null;
+      final Integer assigneeId = null;
+      final String title = "WIP: " + currentTitle;
+      final String description = null;
+      final String stateEvent = null;
+      final String labels = null;
+      try {
+        mergeRequest.setTitle(title); //To avoid setting WIP again on new comments
+        gitlabApi.updateMergeRequest(
+            projectId,
+            mergeRequestId,
+            targetBranch,
+            assigneeId,
+            title,
+            description,
+            stateEvent,
+            labels);
+      } catch (final IOException e) {
+        LOG.error(e.getMessage(), e);
+      }
+    }
+  }
+
   @Override
   public void createSingleFileComment(ChangedFile file, Integer line, String comment) {
+    addingComment();
     final Integer projectId = project.getId();
     final String sha = mergeRequest.getSourceBranch();
     final String note = comment;

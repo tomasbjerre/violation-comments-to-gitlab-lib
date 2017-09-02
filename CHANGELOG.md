@@ -1,6 +1,15 @@
 # Changelog
 
-## Unreleased
+## 1.11
+### No issue
+
+**GitLab API V4**
+
+
+[716256e5ee8ce53](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/716256e5ee8ce53a1343fb4923bd57fd8cd4551b) Tomas Bjerre *2017-09-02 09:26:13*
+
+
+## 1.10
 ### No issue
 
 **Keeping comments and adjusting checkstyle**
@@ -9,7 +18,7 @@
  * Comments can optionaly be kept and not removed when new comments are added. 
  * Will no longer re-create identical comments. 
 
-[918bec7af1969ff](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/918bec7af1969ffa7062d1fceea1191a7f017608) Tomas Bjerre *2017-09-02 09:13:02*
+[afc79c6c0a0b480](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/afc79c6c0a0b4801065bb3d2babd3e1a517fde8c) Tomas Bjerre *2017-09-02 09:13:30*
 
 
 ## 1.9
