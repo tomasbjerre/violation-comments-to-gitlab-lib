@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.12
+### No issue
+
+**Optionally set title to WIP on violations**
+
+
+[f8043a49e21c174](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/f8043a49e21c1747326b8cc8b0a71394b48fa268) Tomas Bjerre *2017-09-02 09:55:07*
+
+
 ## 1.11
 ### No issue
 

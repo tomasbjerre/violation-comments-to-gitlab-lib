@@ -4,10 +4,10 @@ import static se.bjurr.violations.comments.lib.CommentsCreator.FINGERPRINT;
 import static se.bjurr.violations.comments.lib.PatchParser.findLineToComment;
 import static se.bjurr.violations.comments.lib.utils.CommentsUtils.escapeHTML;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.gitlab.api.AuthMethod;
 import org.gitlab.api.GitlabAPI;
 import org.gitlab.api.TokenType;
@@ -17,6 +17,7 @@ import org.gitlab.api.models.GitlabNote;
 import org.gitlab.api.models.GitlabProject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import se.bjurr.violations.comments.lib.model.ChangedFile;
 import se.bjurr.violations.comments.lib.model.Comment;
 import se.bjurr.violations.comments.lib.model.CommentsProvider;
@@ -48,14 +49,14 @@ public class GitLabCommentsProvider implements CommentsProvider {
     final String projectId = violationCommentsToGitLabApi.getProjectId();
     try {
       project = gitlabApi.getProject(projectId);
-    } catch (final IOException e) {
+    } catch (final Throwable e) {
       throw new RuntimeException("Could not get project " + projectId);
     }
 
     final Integer mergeRequestId = violationCommentsToGitLabApi.getMergeRequestId();
     try {
       mergeRequest = gitlabApi.getMergeRequestChanges(project.getId(), mergeRequestId);
-    } catch (final IOException e) {
+    } catch (final Throwable e) {
       throw new RuntimeException("Could not get MR " + projectId + " " + mergeRequestId, e);
     }
 
@@ -67,7 +68,7 @@ public class GitLabCommentsProvider implements CommentsProvider {
     addingComment();
     try {
       gitlabApi.createNote(mergeRequest, comment);
-    } catch (final IOException e) {
+    } catch (final Throwable e) {
       LOG.error("Could create comment " + comment, e);
     }
   }
@@ -97,7 +98,7 @@ public class GitLabCommentsProvider implements CommentsProvider {
             description,
             stateEvent,
             labels);
-      } catch (final IOException e) {
+      } catch (final Throwable e) {
         LOG.error(e.getMessage(), e);
       }
     }
@@ -113,7 +114,7 @@ public class GitLabCommentsProvider implements CommentsProvider {
     final String line_type = "new";
     try {
       gitlabApi.createCommitComment(projectId, sha, note, path, line + "", line_type);
-    } catch (final IOException e) {
+    } catch (final Throwable e) {
       LOG.error(
           "Could not create commit comment"
               + projectId
@@ -141,7 +142,7 @@ public class GitLabCommentsProvider implements CommentsProvider {
         final Comment comment = new Comment(identifier, content, type, specifics);
         found.add(comment);
       }
-    } catch (final IOException e) {
+    } catch (final Throwable e) {
       LOG.error("Could not get comments", e);
     }
     return found;
@@ -169,7 +170,7 @@ public class GitLabCommentsProvider implements CommentsProvider {
         final GitlabNote noteToDelete = new GitlabNote();
         noteToDelete.setId(Integer.parseInt(comment.getIdentifier()));
         gitlabApi.deleteNote(mergeRequest, noteToDelete);
-      } catch (final IOException e) {
+      } catch (final Throwable e) {
         LOG.error("Could not delete note " + comment);
       }
     }
