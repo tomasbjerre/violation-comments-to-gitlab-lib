@@ -41,7 +41,7 @@ repositories {
 
 dependencies {
  compile 'se.bjurr.violations:violation-comments-lib:1.42'
- compile 'com.github.timols:java-gitlab-api:4769949aa463d749a867779e127999a54d1a9ea4'
+ compile 'com.github.tomasbjerre:java-gitlab-api:master'
  testCompile 'junit:junit:4.12'
  testCompile 'org.assertj:assertj-core:2.3.0'
 }

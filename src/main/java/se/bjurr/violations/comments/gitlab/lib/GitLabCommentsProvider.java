@@ -81,7 +81,7 @@ public class GitLabCommentsProvider implements CommentsProvider {
       final Integer mergeRequestId = violationCommentsToGitLabApi.getMergeRequestId();
       final String targetBranch = null;
       final Integer assigneeId = null;
-      final String title = "WIP: " + currentTitle;
+      final String title = "WIP: >>> CONTAINS VIOLATIONS! <<< " + currentTitle;
       final String description = null;
       final String stateEvent = null;
       final String labels = null;
