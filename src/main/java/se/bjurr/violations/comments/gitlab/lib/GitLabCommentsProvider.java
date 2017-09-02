@@ -34,26 +34,27 @@ public class GitLabCommentsProvider implements CommentsProvider {
   private GitlabMergeRequest mergeRequest;
 
   public GitLabCommentsProvider(ViolationCommentsToGitLabApi violationCommentsToGitLabApi) {
-    String hostUrl = violationCommentsToGitLabApi.getHostUrl();
-    String apiToken = violationCommentsToGitLabApi.getApiToken();
-    TokenType tokenType = violationCommentsToGitLabApi.getTokenType();
-    AuthMethod method = violationCommentsToGitLabApi.getMethod();
+    final String hostUrl = violationCommentsToGitLabApi.getHostUrl();
+    final String apiToken = violationCommentsToGitLabApi.getApiToken();
+    final TokenType tokenType = violationCommentsToGitLabApi.getTokenType();
+    final AuthMethod method = violationCommentsToGitLabApi.getMethod();
     gitlabApi = GitlabAPI.connect(hostUrl, apiToken, tokenType, method);
 
-    boolean ignoreCertificateErrors = violationCommentsToGitLabApi.isIgnoreCertificateErrors();
+    final boolean ignoreCertificateErrors =
+        violationCommentsToGitLabApi.isIgnoreCertificateErrors();
     gitlabApi.ignoreCertificateErrors(ignoreCertificateErrors);
 
-    String projectId = violationCommentsToGitLabApi.getProjectId();
+    final String projectId = violationCommentsToGitLabApi.getProjectId();
     try {
       project = gitlabApi.getProject(projectId);
-    } catch (IOException e) {
+    } catch (final IOException e) {
       throw new RuntimeException("Could not get project " + projectId);
     }
 
-    Integer mergeRequestId = violationCommentsToGitLabApi.getMergeRequestId();
+    final Integer mergeRequestId = violationCommentsToGitLabApi.getMergeRequestId();
     try {
       mergeRequest = gitlabApi.getMergeRequestChanges(project.getId(), mergeRequestId);
-    } catch (IOException e) {
+    } catch (final IOException e) {
       throw new RuntimeException("Could not get MR " + projectId + " " + mergeRequestId, e);
     }
 
@@ -64,21 +65,21 @@ public class GitLabCommentsProvider implements CommentsProvider {
   public void createCommentWithAllSingleFileComments(String comment) {
     try {
       gitlabApi.createNote(mergeRequest, comment);
-    } catch (IOException e) {
+    } catch (final IOException e) {
       LOG.error("Could create comment " + comment, e);
     }
   }
 
   @Override
   public void createSingleFileComment(ChangedFile file, Integer line, String comment) {
-    Integer projectId = project.getId();
-    String sha = mergeRequest.getSourceBranch();
-    String note = comment;
-    String path = file.getFilename();
-    String line_type = "new";
+    final Integer projectId = project.getId();
+    final String sha = mergeRequest.getSourceBranch();
+    final String note = comment;
+    final String path = file.getFilename();
+    final String line_type = "new";
     try {
       gitlabApi.createCommitComment(projectId, sha, note, path, line + "", line_type);
-    } catch (IOException e) {
+    } catch (final IOException e) {
       LOG.error(
           "Could not create commit comment"
               + projectId
@@ -95,18 +96,18 @@ public class GitLabCommentsProvider implements CommentsProvider {
 
   @Override
   public List<Comment> getComments() {
-    List<Comment> found = new ArrayList<>();
+    final List<Comment> found = new ArrayList<>();
     try {
-      List<GitlabNote> notes = gitlabApi.getAllNotes(mergeRequest);
-      for (GitlabNote note : notes) {
-        String identifier = note.getId() + "";
-        String content = note.getBody();
-        String type = "PR";
-        List<String> specifics = new ArrayList<>();
-        Comment comment = new Comment(identifier, content, type, specifics);
+      final List<GitlabNote> notes = gitlabApi.getAllNotes(mergeRequest);
+      for (final GitlabNote note : notes) {
+        final String identifier = note.getId() + "";
+        final String content = note.getBody();
+        final String type = "PR";
+        final List<String> specifics = new ArrayList<>();
+        final Comment comment = new Comment(identifier, content, type, specifics);
         found.add(comment);
       }
-    } catch (IOException e) {
+    } catch (final IOException e) {
       LOG.error("Could not get comments", e);
     }
     return found;
@@ -114,13 +115,13 @@ public class GitLabCommentsProvider implements CommentsProvider {
 
   @Override
   public List<ChangedFile> getFiles() {
-    List<ChangedFile> changedFiles = new ArrayList<>();
-    for (GitlabCommitDiff change : mergeRequest.getChanges()) {
-      String filename = change.getNewPath();
-      List<String> specifics = new ArrayList<>();
-      String patchString = change.getDiff();
+    final List<ChangedFile> changedFiles = new ArrayList<>();
+    for (final GitlabCommitDiff change : mergeRequest.getChanges()) {
+      final String filename = change.getNewPath();
+      final List<String> specifics = new ArrayList<>();
+      final String patchString = change.getDiff();
       specifics.add(patchString);
-      ChangedFile changedFile = new ChangedFile(filename, specifics);
+      final ChangedFile changedFile = new ChangedFile(filename, specifics);
       changedFiles.add(changedFile);
     }
 
@@ -129,12 +130,12 @@ public class GitLabCommentsProvider implements CommentsProvider {
 
   @Override
   public void removeComments(List<Comment> comments) {
-    for (Comment comment : comments) {
+    for (final Comment comment : comments) {
       try {
-        GitlabNote noteToDelete = new GitlabNote();
+        final GitlabNote noteToDelete = new GitlabNote();
         noteToDelete.setId(Integer.parseInt(comment.getIdentifier()));
         gitlabApi.deleteNote(mergeRequest, noteToDelete);
-      } catch (IOException e) {
+      } catch (final IOException e) {
         LOG.error("Could not delete note " + comment);
       }
     }
@@ -142,9 +143,10 @@ public class GitLabCommentsProvider implements CommentsProvider {
 
   @Override
   public boolean shouldComment(ChangedFile changedFile, Integer line) {
-    String patchString = changedFile.getSpecifics().get(0);
-    Optional<Integer> lineFoundOpt = findLineToComment(patchString, line);
-    boolean commentOnlyChangedContent = violationCommentsToGitLabApi.getCommentOnlyChangedContent();
+    final String patchString = changedFile.getSpecifics().get(0);
+    final Optional<Integer> lineFoundOpt = findLineToComment(patchString, line);
+    final boolean commentOnlyChangedContent =
+        violationCommentsToGitLabApi.getCommentOnlyChangedContent();
     return !commentOnlyChangedContent || commentOnlyChangedContent && lineFoundOpt.isPresent();
   }
 
@@ -155,11 +157,11 @@ public class GitLabCommentsProvider implements CommentsProvider {
 
   @Override
   public Optional<String> findCommentFormat(ChangedFile changedFile, Violation violation) {
-    String source =
+    final String source =
         violation.getSource().isPresent()
             ? "**Source**: " + violation.getSource().get() + "\n\n"
             : "";
-    String string =
+    final String string =
         ""
             + "**Reporter**: "
             + violation.getReporter()
@@ -189,5 +191,10 @@ public class GitLabCommentsProvider implements CommentsProvider {
   @Override
   public boolean shouldCreateSingleFileComment() {
     return false;
+  }
+
+  @Override
+  public boolean shouldKeepOldComments() {
+    return violationCommentsToGitLabApi.getShouldKeepOldComments();
   }
 }

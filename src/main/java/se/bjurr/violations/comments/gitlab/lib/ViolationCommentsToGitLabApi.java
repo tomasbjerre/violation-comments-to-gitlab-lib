@@ -24,6 +24,7 @@ public class ViolationCommentsToGitLabApi {
   private boolean ignoreCertificateErrors;
   private String projectId;
   private Integer mergeRequestId;
+  private boolean shouldKeepOldComments;
 
   public List<Violation> getViolations() {
     return violations;
@@ -120,7 +121,16 @@ public class ViolationCommentsToGitLabApi {
   }
 
   public void toPullRequest() throws Exception {
-    CommentsProvider commentsProvider = new GitLabCommentsProvider(this);
+    final CommentsProvider commentsProvider = new GitLabCommentsProvider(this);
     createComments(commentsProvider, violations, MAX_VALUE);
+  }
+
+  public ViolationCommentsToGitLabApi setShouldKeepOldComments(boolean shouldKeepOldComments) {
+    this.shouldKeepOldComments = shouldKeepOldComments;
+    return this;
+  }
+
+  public boolean getShouldKeepOldComments() {
+    return shouldKeepOldComments;
   }
 }

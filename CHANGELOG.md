@@ -1,5 +1,35 @@
 # Changelog
 
+## Unreleased
+### No issue
+
+**Keeping comments and adjusting checkstyle**
+
+ * Checkstyle now allows empty source attribute. 
+ * Comments can optionaly be kept and not removed when new comments are added. 
+ * Will no longer re-create identical comments. 
+
+[918bec7af1969ff](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/918bec7af1969ffa7062d1fceea1191a7f017608) Tomas Bjerre *2017-09-02 09:13:02*
+
+
+## 1.9
+### No issue
+
+**Checking for null in API-calls**
+
+
+[a3e997ca6747a24](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/a3e997ca6747a241216bb58df8c422426d0e13c6) Tomas Bjerre *2017-08-11 09:59:58*
+
+
+## 1.8
+### No issue
+
+**Violations-lib 1.29**
+
+
+[602074525a6eb46](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/602074525a6eb46bfe9191b78123437a3bd0aa9a) Tomas Bjerre *2017-07-15 05:33:49*
+
+
 ## 1.7
 ### No issue
 
