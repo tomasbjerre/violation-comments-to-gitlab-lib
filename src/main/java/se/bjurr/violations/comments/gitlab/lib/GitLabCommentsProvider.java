@@ -48,7 +48,7 @@ public class GitLabCommentsProvider implements CommentsProvider {
     try {
       project = gitlabApi.getProject(projectId);
     } catch (final Throwable e) {
-      throw new RuntimeException("Could not get project " + projectId);
+      throw new RuntimeException("Could not get project " + projectId, e);
     }
 
     final Integer mergeRequestId = violationCommentsToGitLabApi.getMergeRequestId();
