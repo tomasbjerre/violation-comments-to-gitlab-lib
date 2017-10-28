@@ -7,6 +7,8 @@ It uses [Violation Comments Lib](https://github.com/tomasbjerre/violation-commen
 ## Usage
 This software can be used:
  * With a [Jenkins plugin](https://github.com/jenkinsci/violation-comments-to-gitlab-plugin).
+ * With a [Gradle plugin](https://github.com/tomasbjerre/violation-comments-to-gitlab-gradle-plugin).
+ * With a [Maven plugin](https://github.com/tomasbjerre/violation-comments-to-gitlab-maven-plugin).
 
 ## Developer instructions
 
