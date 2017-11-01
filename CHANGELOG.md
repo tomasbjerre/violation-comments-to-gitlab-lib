@@ -1,5 +1,55 @@
 # Changelog
 
+## Unreleased
+### No issue
+
+**Doc**
+
+
+[2647ff89ce281e1](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/2647ff89ce281e11837dfc87f4a44b96b0736744) Tomas Bjerre *2017-10-28 20:13:58*
+
+
+## 1.16
+### No issue
+
+**Resharper WikiUrl**
+
+
+[87bbaf8debb08bd](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/87bbaf8debb08bd95db8032cfab2a43a383276c5) Tomas Bjerre *2017-10-13 09:42:13*
+
+
+## 1.15
+### No issue
+
+**Added handling for empty IssueType Description attributes for Resharper**
+
+
+[2fb238752805b33](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/2fb238752805b330a02ba391e35205a6ff0a7002) Tomas Bjerre *2017-10-09 16:41:54*
+
+**Doc**
+
+
+[f0af2239f66792f](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/f0af2239f66792f52d12c8d548b973a1d3b05d9c) Tomas Bjerre *2017-09-02 20:11:22*
+
+
+## 1.14
+### No issue
+
+**Adjusting WIP**
+
+
+[68a405f6ae1e0d7](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/68a405f6ae1e0d74715aab03f363222cc44a9757) Tomas Bjerre *2017-09-02 14:41:30*
+
+
+## 1.13
+### No issue
+
+**java-gitlab-api is throwing Error**
+
+
+[47f9761410acbea](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/47f9761410acbea9a09b1ddcfbe3e6a3c79c86d6) Tomas Bjerre *2017-09-02 13:48:49*
+
+
 ## 1.12
 ### No issue
 
