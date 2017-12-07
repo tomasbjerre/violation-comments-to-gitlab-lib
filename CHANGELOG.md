@@ -1,7 +1,21 @@
 # Changelog
 
-## Unreleased
+## 1.18
 ### No issue
+
+**Latest Gradle**
+
+
+[608449030fbc38e](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/608449030fbc38e05456e26de8fcc1e131d7b1b9) Tomas Bjerre *2017-11-01 18:30:50*
+
+
+## 1.17
+### No issue
+
+**Better error message if project cannot be found**
+
+
+[a6dc49de8258dfc](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/a6dc49de8258dfc77b903b615fd3650ea00a55d8) Tomas Bjerre *2017-11-01 17:12:58*
 
 **Doc**
 
