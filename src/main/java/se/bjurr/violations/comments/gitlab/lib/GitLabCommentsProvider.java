@@ -180,7 +180,7 @@ public class GitLabCommentsProvider implements CommentsProvider {
     final Optional<Integer> lineFoundOpt = findLineToComment(patchString, line);
     final boolean commentOnlyChangedContent =
         violationCommentsToGitLabApi.getCommentOnlyChangedContent();
-    return !commentOnlyChangedContent || commentOnlyChangedContent && lineFoundOpt.isPresent();
+    return !commentOnlyChangedContent || lineFoundOpt.isPresent();
   }
 
   @Override
