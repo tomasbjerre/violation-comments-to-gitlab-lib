@@ -4,10 +4,8 @@ import static java.lang.Integer.MAX_VALUE;
 import static se.bjurr.violations.comments.lib.CommentsCreator.createComments;
 
 import java.util.List;
-
 import org.gitlab.api.AuthMethod;
 import org.gitlab.api.TokenType;
-
 import se.bjurr.violations.comments.lib.model.CommentsProvider;
 import se.bjurr.violations.lib.model.Violation;
 
@@ -78,7 +76,8 @@ public class ViolationCommentsToGitLabApi {
     return ignoreCertificateErrors;
   }
 
-  public ViolationCommentsToGitLabApi setIgnoreCertificateErrors(final boolean ignoreCertificateErrors) {
+  public ViolationCommentsToGitLabApi setIgnoreCertificateErrors(
+      final boolean ignoreCertificateErrors) {
     this.ignoreCertificateErrors = ignoreCertificateErrors;
     return this;
   }
@@ -128,7 +127,8 @@ public class ViolationCommentsToGitLabApi {
     createComments(commentsProvider, violations, MAX_VALUE);
   }
 
-  public ViolationCommentsToGitLabApi setShouldKeepOldComments(final boolean shouldKeepOldComments) {
+  public ViolationCommentsToGitLabApi setShouldKeepOldComments(
+      final boolean shouldKeepOldComments) {
     this.shouldKeepOldComments = shouldKeepOldComments;
     return this;
   }
