@@ -4,8 +4,10 @@ import static java.lang.Integer.MAX_VALUE;
 import static se.bjurr.violations.comments.lib.CommentsCreator.createComments;
 
 import java.util.List;
+
 import org.gitlab.api.AuthMethod;
 import org.gitlab.api.TokenType;
+
 import se.bjurr.violations.comments.lib.model.CommentsProvider;
 import se.bjurr.violations.lib.model.Violation;
 
@@ -23,7 +25,7 @@ public class ViolationCommentsToGitLabApi {
   private AuthMethod method;
   private boolean ignoreCertificateErrors;
   private String projectId;
-  private Integer mergeRequestId;
+  private Integer mergeRequestIid;
   private boolean shouldKeepOldComments;
   private boolean shouldSetWIP;
 
@@ -31,7 +33,7 @@ public class ViolationCommentsToGitLabApi {
     return violations;
   }
 
-  public ViolationCommentsToGitLabApi setViolations(List<Violation> violations) {
+  public ViolationCommentsToGitLabApi setViolations(final List<Violation> violations) {
     this.violations = violations;
     return this;
   }
@@ -40,7 +42,7 @@ public class ViolationCommentsToGitLabApi {
     return hostUrl;
   }
 
-  public ViolationCommentsToGitLabApi setHostUrl(String hostUrl) {
+  public ViolationCommentsToGitLabApi setHostUrl(final String hostUrl) {
     this.hostUrl = hostUrl;
     return this;
   }
@@ -49,7 +51,7 @@ public class ViolationCommentsToGitLabApi {
     return apiToken;
   }
 
-  public ViolationCommentsToGitLabApi setApiToken(String apiToken) {
+  public ViolationCommentsToGitLabApi setApiToken(final String apiToken) {
     this.apiToken = apiToken;
     return this;
   }
@@ -58,7 +60,7 @@ public class ViolationCommentsToGitLabApi {
     return tokenType;
   }
 
-  public ViolationCommentsToGitLabApi setTokenType(TokenType tokenType) {
+  public ViolationCommentsToGitLabApi setTokenType(final TokenType tokenType) {
     this.tokenType = tokenType;
     return this;
   }
@@ -67,7 +69,7 @@ public class ViolationCommentsToGitLabApi {
     return method;
   }
 
-  public ViolationCommentsToGitLabApi setMethod(AuthMethod method) {
+  public ViolationCommentsToGitLabApi setMethod(final AuthMethod method) {
     this.method = method;
     return this;
   }
@@ -76,7 +78,7 @@ public class ViolationCommentsToGitLabApi {
     return ignoreCertificateErrors;
   }
 
-  public ViolationCommentsToGitLabApi setIgnoreCertificateErrors(boolean ignoreCertificateErrors) {
+  public ViolationCommentsToGitLabApi setIgnoreCertificateErrors(final boolean ignoreCertificateErrors) {
     this.ignoreCertificateErrors = ignoreCertificateErrors;
     return this;
   }
@@ -85,28 +87,28 @@ public class ViolationCommentsToGitLabApi {
     return projectId;
   }
 
-  public ViolationCommentsToGitLabApi setProjectId(String projectId) {
+  public ViolationCommentsToGitLabApi setProjectId(final String projectId) {
     this.projectId = projectId;
     return this;
   }
 
-  public Integer getMergeRequestId() {
-    return mergeRequestId;
+  public Integer getMergeRequestIid() {
+    return mergeRequestIid;
   }
 
-  public ViolationCommentsToGitLabApi setMergeRequestId(Integer mergeRequestId) {
-    this.mergeRequestId = mergeRequestId;
+  public ViolationCommentsToGitLabApi setMergeRequestIid(final Integer mergeRequestIid) {
+    this.mergeRequestIid = mergeRequestIid;
     return this;
   }
 
   public ViolationCommentsToGitLabApi setCreateCommentWithAllSingleFileComments(
-      boolean createCommentWithAllSingleFileComments) {
+      final boolean createCommentWithAllSingleFileComments) {
     this.createCommentWithAllSingleFileComments = createCommentWithAllSingleFileComments;
     return this;
   }
 
   public ViolationCommentsToGitLabApi setCommentOnlyChangedContent(
-      boolean commentOnlyChangedContent) {
+      final boolean commentOnlyChangedContent) {
     this.commentOnlyChangedContent = commentOnlyChangedContent;
     return this;
   }
@@ -126,7 +128,7 @@ public class ViolationCommentsToGitLabApi {
     createComments(commentsProvider, violations, MAX_VALUE);
   }
 
-  public ViolationCommentsToGitLabApi setShouldKeepOldComments(boolean shouldKeepOldComments) {
+  public ViolationCommentsToGitLabApi setShouldKeepOldComments(final boolean shouldKeepOldComments) {
     this.shouldKeepOldComments = shouldKeepOldComments;
     return this;
   }
@@ -135,7 +137,7 @@ public class ViolationCommentsToGitLabApi {
     return shouldKeepOldComments;
   }
 
-  public ViolationCommentsToGitLabApi setShouldSetWIP(boolean shouldSetWIP) {
+  public ViolationCommentsToGitLabApi setShouldSetWIP(final boolean shouldSetWIP) {
     this.shouldSetWIP = shouldSetWIP;
     return this;
   }

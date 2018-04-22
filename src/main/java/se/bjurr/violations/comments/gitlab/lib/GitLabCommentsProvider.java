@@ -7,6 +7,7 @@ import static se.bjurr.violations.comments.lib.utils.CommentsUtils.escapeHTML;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.gitlab.api.AuthMethod;
 import org.gitlab.api.GitlabAPI;
 import org.gitlab.api.TokenType;
@@ -16,6 +17,7 @@ import org.gitlab.api.models.GitlabNote;
 import org.gitlab.api.models.GitlabProject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import se.bjurr.violations.comments.lib.model.ChangedFile;
 import se.bjurr.violations.comments.lib.model.Comment;
 import se.bjurr.violations.comments.lib.model.CommentsProvider;
@@ -33,7 +35,7 @@ public class GitLabCommentsProvider implements CommentsProvider {
 
   private GitlabMergeRequest mergeRequest;
 
-  public GitLabCommentsProvider(ViolationCommentsToGitLabApi violationCommentsToGitLabApi) {
+  public GitLabCommentsProvider(final ViolationCommentsToGitLabApi violationCommentsToGitLabApi) {
     final String hostUrl = violationCommentsToGitLabApi.getHostUrl();
     final String apiToken = violationCommentsToGitLabApi.getApiToken();
     final TokenType tokenType = violationCommentsToGitLabApi.getTokenType();
@@ -51,7 +53,7 @@ public class GitLabCommentsProvider implements CommentsProvider {
       throw new RuntimeException("Could not get project " + projectId, e);
     }
 
-    final Integer mergeRequestId = violationCommentsToGitLabApi.getMergeRequestId();
+    final Integer mergeRequestId = violationCommentsToGitLabApi.getMergeRequestIid();
     try {
       mergeRequest = gitlabApi.getMergeRequestChanges(project.getId(), mergeRequestId);
     } catch (final Throwable e) {
@@ -62,7 +64,7 @@ public class GitLabCommentsProvider implements CommentsProvider {
   }
 
   @Override
-  public void createCommentWithAllSingleFileComments(String comment) {
+  public void createCommentWithAllSingleFileComments(final String comment) {
     addingComment();
     try {
       gitlabApi.createNote(mergeRequest, comment);
@@ -78,7 +80,7 @@ public class GitLabCommentsProvider implements CommentsProvider {
         return;
       }
       final Serializable projectId = violationCommentsToGitLabApi.getProjectId();
-      final Integer mergeRequestId = violationCommentsToGitLabApi.getMergeRequestId();
+      final Integer mergeRequestId = violationCommentsToGitLabApi.getMergeRequestIid();
       final String targetBranch = null;
       final Integer assigneeId = null;
       final String title = "WIP: >>> CONTAINS VIOLATIONS! <<< " + currentTitle;
@@ -103,7 +105,7 @@ public class GitLabCommentsProvider implements CommentsProvider {
   }
 
   @Override
-  public void createSingleFileComment(ChangedFile file, Integer line, String comment) {
+  public void createSingleFileComment(final ChangedFile file, final Integer line, final String comment) {
     addingComment();
     final Integer projectId = project.getId();
     final String sha = mergeRequest.getSourceBranch();
@@ -162,7 +164,7 @@ public class GitLabCommentsProvider implements CommentsProvider {
   }
 
   @Override
-  public void removeComments(List<Comment> comments) {
+  public void removeComments(final List<Comment> comments) {
     for (final Comment comment : comments) {
       try {
         final GitlabNote noteToDelete = new GitlabNote();
@@ -175,7 +177,7 @@ public class GitLabCommentsProvider implements CommentsProvider {
   }
 
   @Override
-  public boolean shouldComment(ChangedFile changedFile, Integer line) {
+  public boolean shouldComment(final ChangedFile changedFile, final Integer line) {
     final String patchString = changedFile.getSpecifics().get(0);
     final Optional<Integer> lineFoundOpt = findLineToComment(patchString, line);
     final boolean commentOnlyChangedContent =
@@ -189,7 +191,7 @@ public class GitLabCommentsProvider implements CommentsProvider {
   }
 
   @Override
-  public Optional<String> findCommentFormat(ChangedFile changedFile, Violation violation) {
+  public Optional<String> findCommentFormat(final ChangedFile changedFile, final Violation violation) {
     final String source =
         violation.getSource().isPresent()
             ? "**Source**: " + violation.getSource().get() + "\n\n"
