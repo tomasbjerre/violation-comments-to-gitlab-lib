@@ -5,11 +5,10 @@ import static java.util.logging.Level.SEVERE;
 import static se.bjurr.violations.comments.lib.CommentsCreator.createComments;
 import static se.bjurr.violations.lib.util.Optional.fromNullable;
 
-import java.net.URI;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import com.github.mustachejava.resolver.DefaultResolver;
+import java.io.Reader;
 import java.util.List;
+import java.util.Scanner;
 import java.util.logging.Logger;
 import org.gitlab.api.AuthMethod;
 import org.gitlab.api.TokenType;
@@ -24,12 +23,13 @@ public class ViolationCommentsToGitLabApi {
 
   static {
     try {
-      final URI gitlabCommentTemplateUrl =
-          ViolationCommentsToGitLabApi.class
-              .getResource(DEFAULT_VIOLATION_TEMPLATE_MUSTACH)
-              .toURI();
-      final byte[] bytes = Files.readAllBytes(Paths.get(gitlabCommentTemplateUrl));
-      DEFAULT_TEMPLATE = new String(bytes, Charset.forName("UTF-8"));
+      final Reader reader =
+          new DefaultResolver() //
+              .getReader(DEFAULT_VIOLATION_TEMPLATE_MUSTACH);
+      try (Scanner scanner = new Scanner(reader)) {
+        scanner.useDelimiter("\\A");
+        DEFAULT_TEMPLATE = scanner.hasNext() ? scanner.next() : "";
+      }
     } catch (final Throwable t) {
       Logger.getLogger(ViolationCommentsToGitLabApi.class.getName()).log(SEVERE, t.getMessage(), t);
     }

@@ -3,6 +3,24 @@
 
 Changelog of Violation comments to gitlab lib.
 
+## 1.31
+### No issue
+
+**Escaped message and filename**
+
+
+[3c529460568f513](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/3c529460568f513) Tomas Bjerre *2018-07-04 10:15:17*
+
+
+## 1.30
+### No issue
+
+**Custom template**
+
+
+[bff1247b8e5b3c5](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/bff1247b8e5b3c5) Tomas Bjerre *2018-07-04 08:49:00*
+
+
 ## 1.29
 ### No issue
 
