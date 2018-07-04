@@ -1,7 +1,6 @@
 package se.bjurr.violations.comments.gitlab.lib;
 
 import static java.lang.Integer.MAX_VALUE;
-import static java.util.logging.Level.SEVERE;
 import static se.bjurr.violations.comments.lib.CommentsCreator.createComments;
 import static se.bjurr.violations.lib.util.Optional.fromNullable;
 
@@ -9,35 +8,19 @@ import com.github.mustachejava.resolver.DefaultResolver;
 import java.io.Reader;
 import java.util.List;
 import java.util.Scanner;
-import java.util.logging.Logger;
 import org.gitlab.api.AuthMethod;
 import org.gitlab.api.TokenType;
 import se.bjurr.violations.comments.lib.model.CommentsProvider;
 import se.bjurr.violations.lib.model.Violation;
 import se.bjurr.violations.lib.util.Optional;
+import se.bjurr.violations.lib.util.Utils;
 
 public class ViolationCommentsToGitLabApi {
   private static final String DEFAULT_VIOLATION_TEMPLATE_MUSTACH =
       "default-violation-template-gitlab.mustach";
-  private static String DEFAULT_TEMPLATE = null;
-
-  static {
-    try {
-      final Reader reader =
-          new DefaultResolver() //
-              .getReader(DEFAULT_VIOLATION_TEMPLATE_MUSTACH);
-      try (Scanner scanner = new Scanner(reader)) {
-        scanner.useDelimiter("\\A");
-        DEFAULT_TEMPLATE = scanner.hasNext() ? scanner.next() : "";
-      }
-    } catch (final Throwable t) {
-      Logger.getLogger(ViolationCommentsToGitLabApi.class.getName()).log(SEVERE, t.getMessage(), t);
-    }
-  }
 
   public static ViolationCommentsToGitLabApi violationCommentsToGitLabApi() {
-    return new ViolationCommentsToGitLabApi() //
-        .withCommentTemplate(DEFAULT_TEMPLATE);
+    return new ViolationCommentsToGitLabApi();
   }
 
   private List<Violation> violations;
@@ -150,8 +133,25 @@ public class ViolationCommentsToGitLabApi {
   }
 
   public void toPullRequest() throws Exception {
+    if (Utils.isNullOrEmpty(commentTemplate)) {
+      commentTemplate = getDefaultTemplate();
+    }
     final CommentsProvider commentsProvider = new GitLabCommentsProvider(this);
     createComments(commentsProvider, violations, MAX_VALUE);
+  }
+
+  private String getDefaultTemplate() {
+    try {
+      final Reader reader =
+          new DefaultResolver() //
+              .getReader(DEFAULT_VIOLATION_TEMPLATE_MUSTACH);
+      try (Scanner scanner = new Scanner(reader)) {
+        scanner.useDelimiter("\\A");
+        return scanner.hasNext() ? scanner.next() : "";
+      }
+    } catch (final Throwable t) {
+      throw new RuntimeException(t.getMessage(), t);
+    }
   }
 
   public ViolationCommentsToGitLabApi setShouldKeepOldComments(
