@@ -1,8 +1,6 @@
 package se.bjurr.violations.comments.gitlab.lib;
 
-import static se.bjurr.violations.comments.lib.CommentsCreator.FINGERPRINT;
 import static se.bjurr.violations.comments.lib.PatchParser.findLineToComment;
-import static se.bjurr.violations.comments.lib.utils.CommentsUtils.escapeHTML;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -19,7 +17,6 @@ import org.slf4j.LoggerFactory;
 import se.bjurr.violations.comments.lib.model.ChangedFile;
 import se.bjurr.violations.comments.lib.model.Comment;
 import se.bjurr.violations.comments.lib.model.CommentsProvider;
-import se.bjurr.violations.lib.model.Violation;
 import se.bjurr.violations.lib.util.Optional;
 
 public class GitLabCommentsProvider implements CommentsProvider {
@@ -86,7 +83,7 @@ public class GitLabCommentsProvider implements CommentsProvider {
       final String stateEvent = null;
       final String labels = null;
       try {
-        mergeRequest.setTitle(title); //To avoid setting WIP again on new comments
+        mergeRequest.setTitle(title); // To avoid setting WIP again on new comments
         gitlabApi.updateMergeRequest(
             projectId,
             mergeRequestId,
@@ -190,40 +187,6 @@ public class GitLabCommentsProvider implements CommentsProvider {
   }
 
   @Override
-  public Optional<String> findCommentFormat(
-      final ChangedFile changedFile, final Violation violation) {
-    final String source =
-        violation.getSource().isPresent()
-            ? "**Source**: " + violation.getSource().get() + "\n\n"
-            : "";
-    final String string =
-        ""
-            + "**Reporter**: "
-            + violation.getReporter()
-            + "\n\n"
-            + "**Rule**: "
-            + violation.getRule().or("?")
-            + "\n\n"
-            + "**Severity**: "
-            + violation.getSeverity()
-            + "\n\n"
-            + "**File**: "
-            + changedFile.getFilename()
-            + " L"
-            + violation.getStartLine()
-            + "\n\n"
-            + source
-            + "\n\n"
-            + escapeHTML(violation.getMessage())
-            + "\n\n"
-            + "\n\n"
-            + FINGERPRINT
-            + "<hr/>"
-            + "\n\n\n\n";
-    return Optional.fromNullable(string);
-  }
-
-  @Override
   public boolean shouldCreateSingleFileComment() {
     return false;
   }
@@ -231,5 +194,10 @@ public class GitLabCommentsProvider implements CommentsProvider {
   @Override
   public boolean shouldKeepOldComments() {
     return violationCommentsToGitLabApi.getShouldKeepOldComments();
+  }
+
+  @Override
+  public Optional<String> findCommentTemplate() {
+    return violationCommentsToGitLabApi.findCommentTemplate();
   }
 }

@@ -1,17 +1,43 @@
 package se.bjurr.violations.comments.gitlab.lib;
 
 import static java.lang.Integer.MAX_VALUE;
+import static java.util.logging.Level.SEVERE;
 import static se.bjurr.violations.comments.lib.CommentsCreator.createComments;
+import static se.bjurr.violations.lib.util.Optional.fromNullable;
 
+import java.net.URI;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
+import java.util.logging.Logger;
 import org.gitlab.api.AuthMethod;
 import org.gitlab.api.TokenType;
 import se.bjurr.violations.comments.lib.model.CommentsProvider;
 import se.bjurr.violations.lib.model.Violation;
+import se.bjurr.violations.lib.util.Optional;
 
 public class ViolationCommentsToGitLabApi {
+  private static final String DEFAULT_VIOLATION_TEMPLATE_MUSTACH =
+      "default-violation-template-gitlab.mustach";
+  private static String DEFAULT_TEMPLATE = null;
+
+  static {
+    try {
+      final URI gitlabCommentTemplateUrl =
+          ViolationCommentsToGitLabApi.class
+              .getResource(DEFAULT_VIOLATION_TEMPLATE_MUSTACH)
+              .toURI();
+      final byte[] bytes = Files.readAllBytes(Paths.get(gitlabCommentTemplateUrl));
+      DEFAULT_TEMPLATE = new String(bytes, Charset.forName("UTF-8"));
+    } catch (final Throwable t) {
+      Logger.getLogger(ViolationCommentsToGitLabApi.class.getName()).log(SEVERE, t.getMessage(), t);
+    }
+  }
+
   public static ViolationCommentsToGitLabApi violationCommentsToGitLabApi() {
-    return new ViolationCommentsToGitLabApi();
+    return new ViolationCommentsToGitLabApi() //
+        .withCommentTemplate(DEFAULT_TEMPLATE);
   }
 
   private List<Violation> violations;
@@ -26,6 +52,7 @@ public class ViolationCommentsToGitLabApi {
   private Integer mergeRequestIid;
   private boolean shouldKeepOldComments;
   private boolean shouldSetWIP;
+  private String commentTemplate;
 
   public List<Violation> getViolations() {
     return violations;
@@ -144,5 +171,14 @@ public class ViolationCommentsToGitLabApi {
 
   public boolean getShouldSetWIP() {
     return shouldSetWIP;
+  }
+
+  public ViolationCommentsToGitLabApi withCommentTemplate(final String commentTemplate) {
+    this.commentTemplate = commentTemplate;
+    return this;
+  }
+
+  public Optional<String> findCommentTemplate() {
+    return fromNullable(commentTemplate);
   }
 }
