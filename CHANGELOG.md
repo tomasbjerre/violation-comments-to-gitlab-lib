@@ -3,6 +3,33 @@
 
 Changelog of Violation comments to gitlab lib.
 
+## 1.35
+### No issue
+
+**GCC, ARM GCC and Doxygen**
+
+
+[6c40b7d23894190](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/6c40b7d23894190) Tomas Bjerre *2018-07-04 18:16:37*
+
+
+## 1.34
+### No issue
+
+**Finding default template correct**
+
+
+[ef140c516fe046d](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/ef140c516fe046d) Tomas Bjerre *2018-07-04 11:46:25*
+
+
+## 1.33
+### No issue
+
+**Loading message template correctly**
+
+
+[6fef4f0a2e2b7f3](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/6fef4f0a2e2b7f3) Tomas Bjerre *2018-07-04 11:01:52*
+
+
 ## 1.31
 ### No issue
 
