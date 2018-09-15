@@ -106,9 +106,8 @@ public class GitLabCommentsProvider implements CommentsProvider {
 	}
 
 	@Override
-	public void createDiffDiscussion(final ChangedFile file,
-			final String discussionContent, final Integer newLine,
-			final Integer oldLine) {
+	public void createSingleFileComment(final ChangedFile file,
+			final Integer newLine, final String content) {
 		markMergeRequestAsWIP();
 		final Integer projectId = project.getId();
 		final String sourceSha = mergeRequest.getSourceSha();
@@ -116,8 +115,9 @@ public class GitLabCommentsProvider implements CommentsProvider {
 		final String targertSha = mergeRequest.getTargetSha();
 		final String newPath = file.getFilename();
 		final String oldPath = null;
+		final Integer oldLine = null;
 		try {
-			gitlabApi.createTextDiscussion(mergeRequest, discussionContent,
+			gitlabApi.createTextDiscussion(mergeRequest, content,
 					null, sourceSha, targertSha, headSha, newPath, newLine,
 					oldPath, oldLine);
 		} catch (final Throwable e) {
@@ -128,7 +128,7 @@ public class GitLabCommentsProvider implements CommentsProvider {
 					"HeadSha: " + headSha + lineSeparator +
 					"TargetSha: " + targertSha + lineSeparator +
 					"Path " + newPath + lineSeparator +
-					"Violation: " + discussionContent + lineSeparator +
+					"Violation: " + content + lineSeparator +
 					"NewLine " + newLine + ", OldLine" + newLine);
 		}
 	}
@@ -190,13 +190,13 @@ public class GitLabCommentsProvider implements CommentsProvider {
 	}
 
 	@Override
-	public boolean shouldCreateBulkComment() {
+	public boolean shouldCreateCommentWithAllSingleFileComments() {
 		return violationCommentsToGitLabApi.getCreateCommentWithAllSingleFileComments();
 	}
 
 	@Override
-	public boolean shouldCommentOnTheDiff() {
-		return false;
+	public boolean shouldCreateSingleFileComment() {
+		return violationCommentsToGitLabApi.getCreateCommentPerViolation();
 	}
 
 	@Override
