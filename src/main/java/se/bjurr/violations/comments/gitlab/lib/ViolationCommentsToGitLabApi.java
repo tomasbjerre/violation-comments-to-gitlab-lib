@@ -38,7 +38,6 @@ public class ViolationCommentsToGitLabApi {
   private boolean shouldSetWIP;
   private String commentTemplate;
 
-
   public List<Violation> getViolations() {
     return violations;
   }
@@ -143,8 +142,8 @@ public class ViolationCommentsToGitLabApi {
   /**
    * Gets if a comment per violation should be created.
    *
-   * @return <code>true</code> if a comment should be created for each
-   *         violation, <code>false</code> otherwise.
+   * @return <code>true</code> if a comment should be created for each violation, <code>false</code>
+   *     otherwise.
    */
   public boolean getCreateCommentPerViolation() {
     return createCommentPerViolation;
