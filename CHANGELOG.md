@@ -3,6 +3,33 @@
 
 Changelog of Violation comments to gitlab lib.
 
+## 1.43
+### No issue
+
+**Reducing logging a bit**
+
+
+[a4578991e984ebe](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/a4578991e984ebe) Tomas Bjerre *2018-09-18 08:28:45*
+
+
+## 1.42
+### No issue
+
+**Enabling injected logger**
+
+
+[45262f118668b3d](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/45262f118668b3d) Tomas Bjerre *2018-09-18 08:14:30*
+
+
+## 1.40
+### No issue
+
+**Enabling injected logger**
+
+
+[d35595df3bf6cdc](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/d35595df3bf6cdc) Tomas Bjerre *2018-09-18 07:59:31*
+
+
 ## 1.39
 ### No issue
 
