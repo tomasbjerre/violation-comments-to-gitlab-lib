@@ -20,7 +20,8 @@ import se.bjurr.violations.comments.lib.model.Comment;
 import se.bjurr.violations.lib.util.Optional;
 
 public class GitLabCommentsProvider implements CommentsProvider {
-  private static final Logger LOG = LoggerFactory.getLogger(GitLabCommentsProvider.class);
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(GitLabCommentsProvider.class);
 
   private final ViolationCommentsToGitLabApi violationCommentsToGitLabApi;
 
@@ -60,68 +61,101 @@ public class GitLabCommentsProvider implements CommentsProvider {
 
   @Override
   public void createCommentWithAllSingleFileComments(final String comment) {
-    addingComment();
+    markMergeRequestAsWIP();
     try {
       gitlabApi.createNote(mergeRequest, comment);
     } catch (final Throwable e) {
-      LOG.error("Could create comment " + comment, e);
+      LOGGER.error("Could create comment " + comment, e);
     }
   }
 
-  private void addingComment() {
-    if (this.violationCommentsToGitLabApi.getShouldSetWIP()) {
-      final String currentTitle = mergeRequest.getTitle();
-      if (currentTitle.startsWith("WIP:")) {
-        return;
-      }
-      final Serializable projectId = violationCommentsToGitLabApi.getProjectId();
-      final Integer mergeRequestId = violationCommentsToGitLabApi.getMergeRequestIid();
-      final String targetBranch = null;
-      final Integer assigneeId = null;
-      final String title = "WIP: >>> CONTAINS VIOLATIONS! <<< " + currentTitle;
-      final String description = null;
-      final String stateEvent = null;
-      final String labels = null;
-      try {
-        mergeRequest.setTitle(title); // To avoid setting WIP again on new comments
-        gitlabApi.updateMergeRequest(
-            projectId,
-            mergeRequestId,
-            targetBranch,
-            assigneeId,
-            title,
-            description,
-            stateEvent,
-            labels);
-      } catch (final Throwable e) {
-        LOG.error(e.getMessage(), e);
-      }
+  /**
+   * Set the {@link GitlabMergeRequest} as "Work in Progress" if configured to do so by the
+   * shouldSetWIP flag.
+   */
+  private void markMergeRequestAsWIP() {
+    if (!this.violationCommentsToGitLabApi.getShouldSetWIP()) {
+      return;
+    }
+    final String currentTitle = mergeRequest.getTitle();
+    if (currentTitle.startsWith("WIP:")) {
+      return;
+    }
+    final Serializable projectId = violationCommentsToGitLabApi.getProjectId();
+    final Integer mergeRequestIid = violationCommentsToGitLabApi.getMergeRequestIid();
+    final String targetBranch = null;
+    final Integer assigneeId = null;
+    final String title = "WIP: >>> CONTAINS VIOLATIONS! <<< " + currentTitle;
+    final String description = null;
+    final String stateEvent = null;
+    final String labels = null;
+    try {
+      mergeRequest.setTitle(title); // To avoid setting WIP again on new comments
+      gitlabApi.updateMergeRequest(
+          projectId,
+          mergeRequestIid,
+          targetBranch,
+          assigneeId,
+          title,
+          description,
+          stateEvent,
+          labels);
+    } catch (final Throwable e) {
+      LOGGER.error(e.getMessage(), e);
     }
   }
 
   @Override
   public void createSingleFileComment(
-      final ChangedFile file, final Integer line, final String comment) {
-    addingComment();
+      final ChangedFile file, final Integer newLine, final String content) {
+    markMergeRequestAsWIP();
     final Integer projectId = project.getId();
-    final String sha = mergeRequest.getSourceBranch();
-    final String note = comment;
-    final String path = file.getFilename();
-    final String line_type = "new";
+    final String sourceSha = mergeRequest.getSourceSha();
+    final String headSha = mergeRequest.getHeadSha();
+    final String targertSha = mergeRequest.getTargetSha();
+    final String newPath = file.getFilename();
+    final String oldPath = null;
+    final Integer oldLine = null;
     try {
-      gitlabApi.createCommitComment(projectId, sha, note, path, line + "", line_type);
+      gitlabApi.createTextDiscussion(
+          mergeRequest,
+          content,
+          null,
+          sourceSha,
+          targertSha,
+          headSha,
+          newPath,
+          newLine,
+          oldPath,
+          oldLine);
     } catch (final Throwable e) {
-      LOG.error(
-          "Could not create commit comment"
+      final String lineSeparator = System.lineSeparator();
+      LOGGER.error(
+          "Could not create diff discussion!"
+              + lineSeparator
+              + "ProjectID: "
               + projectId
-              + " "
-              + sha
-              + " "
-              + note
-              + " "
-              + path
-              + " "
-              + line_type);
+              + lineSeparator
+              + "SourceSha: "
+              + sourceSha
+              + lineSeparator
+              + "HeadSha: "
+              + headSha
+              + lineSeparator
+              + "TargetSha: "
+              + targertSha
+              + lineSeparator
+              + "Path "
+              + newPath
+              + lineSeparator
+              + "Violation: "
+              + content
+              + lineSeparator
+              + "NewLine "
+              + newLine
+              + ", OldLine"
+              + newLine,
+          e);
     }
   }
 
@@ -139,7 +173,7 @@ public class GitLabCommentsProvider implements CommentsProvider {
         found.add(comment);
       }
     } catch (final Throwable e) {
-      LOG.error("Could not get comments", e);
+      LOGGER.error("Could not get comments", e);
     }
     return found;
   }
@@ -167,7 +201,7 @@ public class GitLabCommentsProvider implements CommentsProvider {
         noteToDelete.setId(Integer.parseInt(comment.getIdentifier()));
         gitlabApi.deleteNote(mergeRequest, noteToDelete);
       } catch (final Throwable e) {
-        LOG.error("Could not delete note " + comment);
+        LOGGER.error("Could not delete note " + comment, e);
       }
     }
   }
@@ -188,7 +222,7 @@ public class GitLabCommentsProvider implements CommentsProvider {
 
   @Override
   public boolean shouldCreateSingleFileComment() {
-    return false;
+    return violationCommentsToGitLabApi.getCreateCommentPerViolation();
   }
 
   @Override
