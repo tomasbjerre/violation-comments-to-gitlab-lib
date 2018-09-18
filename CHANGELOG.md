@@ -3,6 +3,15 @@
 
 Changelog of Violation comments to gitlab lib.
 
+## 1.44
+### No issue
+
+**Prettier logging**
+
+
+[68ff48b7f2afe8e](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/68ff48b7f2afe8e) Tomas Bjerre *2018-09-18 09:38:50*
+
+
 ## 1.43
 ### No issue
 
