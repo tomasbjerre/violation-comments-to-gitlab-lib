@@ -3,6 +3,50 @@
 
 Changelog of Violation comments to gitlab lib.
 
+## 1.39
+### No issue
+
+**Fix optional rule in YAMLLint**
+
+
+[f86621a7b245d27](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/f86621a7b245d27) Tomas Bjerre *2018-09-17 13:29:29*
+
+
+## 1.38
+### No issue
+
+**YAMLLint**
+
+
+[9edcb09dd05c227](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/9edcb09dd05c227) Tomas Bjerre *2018-09-15 07:55:06*
+
+
+## 1.37
+### GitHub [#5](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/issues/5) This project is missing a license
+
+**License**
+
+
+[f7dd7ba289c50ca](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/f7dd7ba289c50ca) Tomas Bjerre *2018-08-08 05:54:37*
+
+
+### No issue
+
+**Correcting CPD parser and adding category to model**
+
+
+[e68460f1e649098](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/e68460f1e649098) Tomas Bjerre *2018-09-12 20:46:14*
+
+
+## 1.36
+### No issue
+
+**Using java-gitlab-api from Central**
+
+
+[567561b65f3e037](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/567561b65f3e037) Tomas Bjerre *2018-07-05 05:12:43*
+
+
 ## 1.35
 ### No issue
 

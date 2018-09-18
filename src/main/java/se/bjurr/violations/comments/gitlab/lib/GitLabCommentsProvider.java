@@ -14,9 +14,9 @@ import org.gitlab.api.models.GitlabNote;
 import org.gitlab.api.models.GitlabProject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import se.bjurr.violations.comments.lib.CommentsProvider;
 import se.bjurr.violations.comments.lib.model.ChangedFile;
 import se.bjurr.violations.comments.lib.model.Comment;
-import se.bjurr.violations.comments.lib.model.CommentsProvider;
 import se.bjurr.violations.lib.util.Optional;
 
 public class GitLabCommentsProvider implements CommentsProvider {

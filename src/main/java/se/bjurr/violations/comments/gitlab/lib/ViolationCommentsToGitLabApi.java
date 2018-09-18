@@ -10,7 +10,9 @@ import java.util.List;
 import java.util.Scanner;
 import org.gitlab.api.AuthMethod;
 import org.gitlab.api.TokenType;
-import se.bjurr.violations.comments.lib.model.CommentsProvider;
+import org.slf4j.LoggerFactory;
+import se.bjurr.violations.comments.lib.CommentsProvider;
+import se.bjurr.violations.comments.lib.ViolationsLogger;
 import se.bjurr.violations.lib.model.Violation;
 import se.bjurr.violations.lib.util.Optional;
 import se.bjurr.violations.lib.util.Utils;
@@ -36,6 +38,17 @@ public class ViolationCommentsToGitLabApi {
   private boolean shouldKeepOldComments;
   private boolean shouldSetWIP;
   private String commentTemplate;
+  private ViolationsLogger violationsLogger =
+      new ViolationsLogger() {
+        @Override
+        public void log(final String string) {
+          LoggerFactory.getLogger(ViolationsLogger.class).info(string);
+        }
+      };
+
+  public void setViolationsLogger(final ViolationsLogger violationsLogger) {
+    this.violationsLogger = violationsLogger;
+  }
 
   public List<Violation> getViolations() {
     return violations;
@@ -137,7 +150,7 @@ public class ViolationCommentsToGitLabApi {
       commentTemplate = getDefaultTemplate();
     }
     final CommentsProvider commentsProvider = new GitLabCommentsProvider(this);
-    createComments(commentsProvider, violations, MAX_VALUE);
+    createComments(violationsLogger, violations, MAX_VALUE, commentsProvider);
   }
 
   private String getDefaultTemplate() {
