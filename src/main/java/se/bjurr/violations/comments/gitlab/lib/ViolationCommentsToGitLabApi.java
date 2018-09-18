@@ -8,9 +8,10 @@ import com.github.mustachejava.resolver.DefaultResolver;
 import java.io.Reader;
 import java.util.List;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.gitlab.api.AuthMethod;
 import org.gitlab.api.TokenType;
-import org.slf4j.LoggerFactory;
 import se.bjurr.violations.comments.lib.CommentsProvider;
 import se.bjurr.violations.comments.lib.ViolationsLogger;
 import se.bjurr.violations.lib.model.Violation;
@@ -41,8 +42,13 @@ public class ViolationCommentsToGitLabApi {
   private ViolationsLogger violationsLogger =
       new ViolationsLogger() {
         @Override
-        public void log(final String string) {
-          LoggerFactory.getLogger(ViolationsLogger.class).info(string);
+        public void log(final Level level, final String string) {
+          Logger.getLogger(ViolationsLogger.class.getSimpleName()).log(level, string);
+        }
+
+        @Override
+        public void log(final Level level, final String string, final Throwable t) {
+          Logger.getLogger(ViolationsLogger.class.getSimpleName()).log(level, string, t);
         }
       };
 
@@ -151,7 +157,7 @@ public class ViolationCommentsToGitLabApi {
     if (Utils.isNullOrEmpty(commentTemplate)) {
       commentTemplate = getDefaultTemplate();
     }
-    final CommentsProvider commentsProvider = new GitLabCommentsProvider(this);
+    final CommentsProvider commentsProvider = new GitLabCommentsProvider(violationsLogger, this);
     createComments(violationsLogger, violations, MAX_VALUE, commentsProvider);
   }
 

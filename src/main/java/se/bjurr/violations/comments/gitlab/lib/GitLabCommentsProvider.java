@@ -1,5 +1,6 @@
 package se.bjurr.violations.comments.gitlab.lib;
 
+import static java.util.logging.Level.SEVERE;
 import static se.bjurr.violations.comments.lib.PatchParser.findLineToComment;
 
 import java.io.Serializable;
@@ -12,25 +13,26 @@ import org.gitlab.api.models.GitlabCommitDiff;
 import org.gitlab.api.models.GitlabMergeRequest;
 import org.gitlab.api.models.GitlabNote;
 import org.gitlab.api.models.GitlabProject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import se.bjurr.violations.comments.lib.CommentsProvider;
+import se.bjurr.violations.comments.lib.ViolationsLogger;
 import se.bjurr.violations.comments.lib.model.ChangedFile;
 import se.bjurr.violations.comments.lib.model.Comment;
 import se.bjurr.violations.lib.util.Optional;
 
 public class GitLabCommentsProvider implements CommentsProvider {
-  private static final Logger LOG = LoggerFactory.getLogger(GitLabCommentsProvider.class);
-
   private final ViolationCommentsToGitLabApi violationCommentsToGitLabApi;
 
   private final GitlabAPI gitlabApi;
+  private final ViolationsLogger violationsLogger;
 
   private GitlabProject project;
 
   private GitlabMergeRequest mergeRequest;
 
-  public GitLabCommentsProvider(final ViolationCommentsToGitLabApi violationCommentsToGitLabApi) {
+  public GitLabCommentsProvider(
+      ViolationsLogger violationsLogger,
+      final ViolationCommentsToGitLabApi violationCommentsToGitLabApi) {
+    this.violationsLogger = violationsLogger;
     final String hostUrl = violationCommentsToGitLabApi.getHostUrl();
     final String apiToken = violationCommentsToGitLabApi.getApiToken();
     final TokenType tokenType = violationCommentsToGitLabApi.getTokenType();
@@ -64,7 +66,7 @@ public class GitLabCommentsProvider implements CommentsProvider {
     try {
       gitlabApi.createNote(mergeRequest, comment);
     } catch (final Throwable e) {
-      LOG.error("Could create comment " + comment, e);
+      violationsLogger.log(SEVERE, "Could create comment " + comment, e);
     }
   }
 
@@ -94,7 +96,7 @@ public class GitLabCommentsProvider implements CommentsProvider {
             stateEvent,
             labels);
       } catch (final Throwable e) {
-        LOG.error(e.getMessage(), e);
+        violationsLogger.log(SEVERE, e.getMessage(), e);
       }
     }
   }
@@ -111,7 +113,8 @@ public class GitLabCommentsProvider implements CommentsProvider {
     try {
       gitlabApi.createCommitComment(projectId, sha, note, path, line + "", line_type);
     } catch (final Throwable e) {
-      LOG.error(
+      violationsLogger.log(
+          SEVERE,
           "Could not create commit comment"
               + projectId
               + " "
@@ -121,7 +124,8 @@ public class GitLabCommentsProvider implements CommentsProvider {
               + " "
               + path
               + " "
-              + line_type);
+              + line_type,
+          e);
     }
   }
 
@@ -139,7 +143,7 @@ public class GitLabCommentsProvider implements CommentsProvider {
         found.add(comment);
       }
     } catch (final Throwable e) {
-      LOG.error("Could not get comments", e);
+      violationsLogger.log(SEVERE, "Could not get comments", e);
     }
     return found;
   }
@@ -167,7 +171,7 @@ public class GitLabCommentsProvider implements CommentsProvider {
         noteToDelete.setId(Integer.parseInt(comment.getIdentifier()));
         gitlabApi.deleteNote(mergeRequest, noteToDelete);
       } catch (final Throwable e) {
-        LOG.error("Could not delete note " + comment);
+        violationsLogger.log(SEVERE, "Could not delete note " + comment, e);
       }
     }
   }
