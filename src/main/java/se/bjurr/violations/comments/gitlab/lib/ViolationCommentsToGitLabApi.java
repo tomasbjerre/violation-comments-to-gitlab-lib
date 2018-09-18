@@ -46,8 +46,10 @@ public class ViolationCommentsToGitLabApi {
         }
       };
 
-  public void setViolationsLogger(final ViolationsLogger violationsLogger) {
+  public ViolationCommentsToGitLabApi withViolationsLogger(
+      final ViolationsLogger violationsLogger) {
     this.violationsLogger = violationsLogger;
+    return this;
   }
 
   public List<Violation> getViolations() {
