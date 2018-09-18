@@ -3,6 +3,15 @@
 
 Changelog of Violation comments to gitlab lib.
 
+## 1.46
+### No issue
+
+**Exception and log level**
+
+
+[802a77576c8b4ae](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/802a77576c8b4ae) Tomas Bjerre *2018-09-18 18:45:39*
+
+
 ## 1.45
 ### No issue
 
