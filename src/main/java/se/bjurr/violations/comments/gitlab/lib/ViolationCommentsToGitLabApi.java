@@ -28,6 +28,7 @@ public class ViolationCommentsToGitLabApi {
 
   private List<Violation> violations;
   private boolean createCommentWithAllSingleFileComments = false;
+  private boolean createCommentPerViolation = false;
   private boolean commentOnlyChangedContent = false;
   private String hostUrl;
   private String apiToken;
@@ -137,6 +138,12 @@ public class ViolationCommentsToGitLabApi {
     return this;
   }
 
+  public ViolationCommentsToGitLabApi setCreateCommentPerViolation(
+      final boolean createCommentPerViolation) {
+    this.createCommentPerViolation = createCommentPerViolation;
+    return this;
+  }
+
   public ViolationCommentsToGitLabApi setCommentOnlyChangedContent(
       final boolean commentOnlyChangedContent) {
     this.commentOnlyChangedContent = commentOnlyChangedContent;
@@ -151,6 +158,16 @@ public class ViolationCommentsToGitLabApi {
 
   public boolean getCreateCommentWithAllSingleFileComments() {
     return createCommentWithAllSingleFileComments;
+  }
+
+  /**
+   * Gets if a comment per violation should be created.
+   *
+   * @return <code>true</code> if a comment should be created for each violation, <code>false</code>
+   *     otherwise.
+   */
+  public boolean getCreateCommentPerViolation() {
+    return createCommentPerViolation;
   }
 
   public void toPullRequest() throws Exception {
