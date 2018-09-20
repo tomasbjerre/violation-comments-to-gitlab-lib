@@ -3,6 +3,15 @@
 
 Changelog of Violation comments to gitlab lib.
 
+## 1.47
+### No issue
+
+**Kotlin Maven and Gradle parsers**
+
+
+[833737f577431af](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/833737f577431af) Tomas Bjerre *2018-09-20 14:16:49*
+
+
 ## 1.46
 ### No issue
 
