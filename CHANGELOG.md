@@ -3,6 +3,15 @@
 
 Changelog of Violation comments to gitlab lib.
 
+## 1.48
+### No issue
+
+**Correcting Kotlin parsers**
+
+
+[fabd97971bdec25](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/fabd97971bdec25) Tomas Bjerre *2018-09-20 23:52:05*
+
+
 ## 1.47
 ### No issue
 
