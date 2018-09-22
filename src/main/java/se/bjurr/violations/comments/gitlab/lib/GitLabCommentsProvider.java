@@ -1,5 +1,6 @@
 package se.bjurr.violations.comments.gitlab.lib;
 
+import static java.util.logging.Level.INFO;
 import static java.util.logging.Level.SEVERE;
 import static se.bjurr.violations.comments.lib.PatchParser.findLineToComment;
 
@@ -171,7 +172,13 @@ public class GitLabCommentsProvider implements CommentsProvider {
         noteToDelete.setId(Integer.parseInt(comment.getIdentifier()));
         gitlabApi.deleteNote(mergeRequest, noteToDelete);
       } catch (final Throwable e) {
-        violationsLogger.log(SEVERE, "Could not delete note " + comment, e);
+        violationsLogger.log(
+            INFO,
+            "Exception thrown when delete note "
+                + comment.getIdentifier()
+                + ". This is probably because of "
+                + "https://github.com/timols/java-gitlab-api/issues/321");
+        // violationsLogger.log(SEVERE, "Could not delete note " + comment, e);
       }
     }
   }
