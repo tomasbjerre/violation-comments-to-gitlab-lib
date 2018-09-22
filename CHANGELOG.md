@@ -3,13 +3,13 @@
 
 Changelog of Violation comments to gitlab lib.
 
-## Unreleased
+## 1.49
 ### No issue
 
 **Avoid java-gitlab-api bug to spam logs with exception**
 
 
-[b16b7d4659903de](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/b16b7d4659903de) Tomas Bjerre *2018-09-22 16:59:06*
+[5f7fbe9f96e56a3](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/5f7fbe9f96e56a3) Tomas Bjerre *2018-09-22 16:59:29*
 
 
 ## 1.48
