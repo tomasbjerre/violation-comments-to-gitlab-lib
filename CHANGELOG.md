@@ -3,6 +3,15 @@
 
 Changelog of Violation comments to gitlab lib.
 
+## 1.50
+### No issue
+
+**Automating reporters in readme**
+
+
+[13ec7f9f91a4fe4](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/13ec7f9f91a4fe4) Tomas Bjerre *2018-09-23 12:47:18*
+
+
 ## 1.49
 ### No issue
 
