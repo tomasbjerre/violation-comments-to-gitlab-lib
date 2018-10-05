@@ -3,6 +3,33 @@
 
 Changelog of Violation comments to gitlab lib.
 
+## 1.51
+### GitHub [#7](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/pull/7) Comment on Diff feature.  
+
+**Adjustments on diff comments from PR**
+
+
+[7e19c6c40cc22fc](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/7e19c6c40cc22fc) Tomas Bjerre *2018-10-05 15:00:30*
+
+
+### No issue
+
+**Log exception.**
+
+
+[2e19300b4c3828b](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/2e19300b4c3828b) Patrizio Bonzani *2018-09-17 07:18:43*
+
+**Add variable for creating a comment per violation.**
+
+
+[4ffe92ccffece03](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/4ffe92ccffece03) Patrizio Bonzani *2018-09-15 19:07:41*
+
+**Start comment on Diff feature.**
+
+
+[f272aad813da3e8](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/f272aad813da3e8) Patrizio Bonzani *2018-09-15 09:41:15*
+
+
 ## 1.50
 ### No issue
 
@@ -112,7 +139,7 @@ Changelog of Violation comments to gitlab lib.
 
 
 ## 1.37
-### GitHub [#5](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/issues/5) This project is missing a license
+### GitHub [#5](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/issues/5) This project is missing a license  
 
 **License**
 
