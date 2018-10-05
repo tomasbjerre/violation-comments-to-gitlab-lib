@@ -3,6 +3,42 @@
 
 Changelog of Violation comments to gitlab lib.
 
+## 1.50
+### No issue
+
+**Automating reporters in readme**
+
+
+[13ec7f9f91a4fe4](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/13ec7f9f91a4fe4) Tomas Bjerre *2018-09-23 12:47:18*
+
+
+## 1.49
+### No issue
+
+**Avoid java-gitlab-api bug to spam logs with exception**
+
+
+[5f7fbe9f96e56a3](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/5f7fbe9f96e56a3) Tomas Bjerre *2018-09-22 16:59:29*
+
+
+## 1.48
+### No issue
+
+**Correcting Kotlin parsers**
+
+
+[fabd97971bdec25](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/fabd97971bdec25) Tomas Bjerre *2018-09-20 23:52:05*
+
+
+## 1.47
+### No issue
+
+**Kotlin Maven and Gradle parsers**
+
+
+[833737f577431af](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/833737f577431af) Tomas Bjerre *2018-09-20 14:16:49*
+
+
 ## 1.46
 ### No issue
 
