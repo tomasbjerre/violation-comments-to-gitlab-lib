@@ -115,9 +115,9 @@ public class GitLabCommentsProvider implements CommentsProvider {
     final String baseSha = mergeRequest.getBaseSha();
     final String startSha = mergeRequest.getStartSha();
     final String headSha = mergeRequest.getHeadSha();
-    final String newPath = file.getFilename();
-    final String oldPath = null;
-    final Integer oldLine = null;
+    final String oldPath = file.getSpecifics().get(1);
+    final String newPath = file.getSpecifics().get(2);
+    Integer oldLine = newLine;
     try {
       gitlabApi.createTextDiscussion(
           mergeRequest,
@@ -189,6 +189,8 @@ public class GitLabCommentsProvider implements CommentsProvider {
       final List<String> specifics = new ArrayList<>();
       final String patchString = change.getDiff();
       specifics.add(patchString);
+      specifics.add(change.getOldPath());
+      specifics.add(change.getNewPath());
       final ChangedFile changedFile = new ChangedFile(filename, specifics);
       changedFiles.add(changedFile);
     }
