@@ -1,0 +1,12 @@
+{  
+   "position[old_line]":9,
+   "position[base_sha]":"e746f44de4cac5b4a4362e6713a3416e1e6617d3",
+   "position[head_sha]":"7e23c9a980197fe49fae67fb23687c857ff42f86",
+   "position[position_type]":"text",
+   "body":"**Reporter**: PMD\n\n**Rule**: EmptyIfStmt\n\n**Severity**: WARN\n\n**File**: /home/bjerre/workspace/violations/violation-comments-to-gitlab-plugin/work/workspace/pipe2/src/main/java/se/bjurr/violations/lib/example/MyClass.java L9\n\n\nAvoid empty if statements&#10;&#10;&#10;Empty Code http://pmd.sourceforge.net/pmd-5.2.3/pmd-java/rules/java/empty.html#EmptyIfStmt\n\n\n*<this is a auto generated comment from violation-comments-lib F7F8ASD8123FSDF>* *<a-113352401>*",
+   "type":"DiffNote",
+   "position[new_path]":"src/main/java/se/bjurr/violations/lib/example/MyClass.java",
+   "position[start_sha]":"a06971bdc77855da448a35da3313d20123320240",
+   "position[new_line]":9,
+   "position[old_path]":"src/main/java/se/bjurr/violations/lib/example/MyClass.java"
+}
