@@ -6,7 +6,11 @@ import static se.bjurr.violations.comments.lib.PatchParser.findLineToComment;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+
 import org.gitlab.api.AuthMethod;
 import org.gitlab.api.GitlabAPI;
 import org.gitlab.api.TokenType;
@@ -15,6 +19,7 @@ import org.gitlab.api.models.GitlabMergeRequest;
 import org.gitlab.api.models.GitlabNote;
 import org.gitlab.api.models.GitlabProject;
 import se.bjurr.violations.comments.lib.CommentsProvider;
+import se.bjurr.violations.comments.lib.PatchParser;
 import se.bjurr.violations.comments.lib.ViolationsLogger;
 import se.bjurr.violations.comments.lib.model.ChangedFile;
 import se.bjurr.violations.comments.lib.model.Comment;
@@ -115,9 +120,10 @@ public class GitLabCommentsProvider implements CommentsProvider {
     final String baseSha = mergeRequest.getBaseSha();
     final String startSha = mergeRequest.getStartSha();
     final String headSha = mergeRequest.getHeadSha();
+    final String patchString = file.getSpecifics().get(0);
     final String oldPath = file.getSpecifics().get(1);
     final String newPath = file.getSpecifics().get(2);
-    Integer oldLine = newLine;
+    Integer oldLine = getLineTranslation(patchString,newLine).get(newLine);
     try {
       gitlabApi.createTextDiscussion(
           mergeRequest,
@@ -160,6 +166,20 @@ public class GitLabCommentsProvider implements CommentsProvider {
               + newLine,
           e);
     }
+  }
+
+  public static Map<Integer,Integer> getLineTranslation(final String patchString, Integer untilLine) {
+    final Map<Integer, Integer> map = new TreeMap<>();
+    for (int lineInDiff = 0; lineInDiff <= untilLine;lineInDiff++) {
+      Integer oldLine = lineInDiff;
+      final Optional<Integer> linteToCommentOpt = PatchParser.findLineToComment(patchString, lineInDiff);
+      if (linteToCommentOpt.isPresent()) {
+        final Integer lineToComment = linteToCommentOpt.get();
+        oldLine = lineToComment;
+      }
+      map.put(lineInDiff,oldLine);
+    }
+    return map;
   }
 
   @Override
