@@ -3,6 +3,15 @@
 
 Changelog of Violation comments to gitlab lib.
 
+## 1.52
+### No issue
+
+**Including entire rule in Flake8**
+
+
+[f6f5b2beb43bb15](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/f6f5b2beb43bb15) Tomas Bjerre *2018-10-06 06:33:00*
+
+
 ## 1.51
 ### GitHub [#7](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/pull/7) Comment on Diff feature.  
 
