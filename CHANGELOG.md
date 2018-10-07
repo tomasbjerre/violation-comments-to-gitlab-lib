@@ -3,6 +3,15 @@
 
 Changelog of Violation comments to gitlab lib.
 
+## Unreleased
+### No issue
+
+**Stepping java-gitlab-api**
+
+
+[be5b00b80d488f7](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/be5b00b80d488f7) Tomas Bjerre *2018-10-07 09:35:18*
+
+
 ## 1.53
 ### GitHub [#3](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/issues/3) Commenting the diff with individual comments    *enhancement*  
 
