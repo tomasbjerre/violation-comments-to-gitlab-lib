@@ -3,13 +3,13 @@
 
 Changelog of Violation comments to gitlab lib.
 
-## Unreleased
+## 1.53
 ### GitHub [#3](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/issues/3) Commenting the diff with individual comments    *enhancement*  
 
 **Finding oldLine from diff**
 
 
-[459a419cdeb1f53](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/459a419cdeb1f53) Tomas Bjerre *2018-10-07 08:58:13*
+[2d251a9b286805d](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/2d251a9b286805d) Tomas Bjerre *2018-10-07 09:21:36*
 
 **Setting newPath and oldPath in discussion**
 
