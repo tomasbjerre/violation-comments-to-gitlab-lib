@@ -3,10 +3,12 @@ package se.bjurr.violations.comments.gitlab.lib;
 import static java.util.logging.Level.INFO;
 import static java.util.logging.Level.SEVERE;
 import static se.bjurr.violations.comments.lib.PatchParser.findLineToComment;
+import static se.bjurr.violations.comments.lib.PatchParser.getLineTranslation;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.gitlab.api.AuthMethod;
 import org.gitlab.api.GitlabAPI;
 import org.gitlab.api.TokenType;
@@ -18,7 +20,6 @@ import se.bjurr.violations.comments.lib.CommentsProvider;
 import se.bjurr.violations.comments.lib.ViolationsLogger;
 import se.bjurr.violations.comments.lib.model.ChangedFile;
 import se.bjurr.violations.comments.lib.model.Comment;
-import se.bjurr.violations.lib.util.Optional;
 
 public class GitLabCommentsProvider implements CommentsProvider {
   private final ViolationCommentsToGitLabApi violationCommentsToGitLabApi;
@@ -115,9 +116,13 @@ public class GitLabCommentsProvider implements CommentsProvider {
     final String baseSha = mergeRequest.getBaseSha();
     final String startSha = mergeRequest.getStartSha();
     final String headSha = mergeRequest.getHeadSha();
+    final String patchString = file.getSpecifics().get(0);
     final String oldPath = file.getSpecifics().get(1);
     final String newPath = file.getSpecifics().get(2);
-    Integer oldLine = newLine;
+    Integer oldLine =
+        getLineTranslation(patchString) //
+            .get(newLine) //
+            .orElse(null);
     try {
       gitlabApi.createTextDiscussion(
           mergeRequest,
@@ -242,7 +247,7 @@ public class GitLabCommentsProvider implements CommentsProvider {
   }
 
   @Override
-  public Optional<String> findCommentTemplate() {
+  public se.bjurr.violations.lib.util.Optional<String> findCommentTemplate() {
     return violationCommentsToGitLabApi.findCommentTemplate();
   }
 }

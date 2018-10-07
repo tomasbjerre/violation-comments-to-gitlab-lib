@@ -3,6 +3,38 @@
 
 Changelog of Violation comments to gitlab lib.
 
+## Unreleased
+### GitHub [#3](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/issues/3) Commenting the diff with individual comments    *enhancement*  
+
+**Finding oldLine from diff**
+
+
+[459a419cdeb1f53](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/459a419cdeb1f53) Tomas Bjerre *2018-10-07 08:58:13*
+
+**Setting newPath and oldPath in discussion**
+
+
+[bd76fa641a2856c](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/bd76fa641a2856c) Tomas Bjerre *2018-10-06 15:35:22*
+
+
+### No issue
+
+**query parameter format**
+
+
+[e36b1f8495bdb5f](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/e36b1f8495bdb5f) Patrizio Bonzani *2018-10-06 12:35:28*
+
+**make parameters query parameters.**
+
+
+[79819367fc02947](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/79819367fc02947) Patrizio Bonzani *2018-10-06 12:33:08*
+
+**Adding script to fiddle with DiffNote**
+
+
+[403f2d5c73e1ade](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/403f2d5c73e1ade) Tomas Bjerre *2018-10-06 11:48:49*
+
+
 ## 1.52
 ### No issue
 
