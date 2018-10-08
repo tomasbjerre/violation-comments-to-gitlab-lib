@@ -2,8 +2,6 @@ package se.bjurr.violations.comments.gitlab.lib;
 
 import static java.util.logging.Level.INFO;
 import static java.util.logging.Level.SEVERE;
-import static se.bjurr.violations.comments.lib.PatchParser.findLineToComment;
-import static se.bjurr.violations.comments.lib.PatchParser.getLineTranslation;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -17,6 +15,7 @@ import org.gitlab.api.models.GitlabMergeRequest;
 import org.gitlab.api.models.GitlabNote;
 import org.gitlab.api.models.GitlabProject;
 import se.bjurr.violations.comments.lib.CommentsProvider;
+import se.bjurr.violations.comments.lib.PatchParser;
 import se.bjurr.violations.comments.lib.ViolationsLogger;
 import se.bjurr.violations.comments.lib.model.ChangedFile;
 import se.bjurr.violations.comments.lib.model.Comment;
@@ -120,8 +119,8 @@ public class GitLabCommentsProvider implements CommentsProvider {
     final String oldPath = file.getSpecifics().get(1);
     final String newPath = file.getSpecifics().get(2);
     Integer oldLine =
-        getLineTranslation(patchString) //
-            .get(newLine) //
+        new PatchParser(patchString) //
+            .findOldLine(newLine) //
             .orElse(null);
     try {
       gitlabApi.createTextDiscussion(
@@ -225,10 +224,9 @@ public class GitLabCommentsProvider implements CommentsProvider {
   @Override
   public boolean shouldComment(final ChangedFile changedFile, final Integer line) {
     final String patchString = changedFile.getSpecifics().get(0);
-    final Optional<Integer> lineFoundOpt = findLineToComment(patchString, line);
-    final boolean commentOnlyChangedContent =
-        violationCommentsToGitLabApi.getCommentOnlyChangedContent();
-    return !commentOnlyChangedContent || lineFoundOpt.isPresent();
+    if (!violationCommentsToGitLabApi.getCommentOnlyChangedContent()) return true;
+    return new PatchParser(patchString) //
+        .isLineInDiff(line);
   }
 
   @Override
@@ -247,7 +245,7 @@ public class GitLabCommentsProvider implements CommentsProvider {
   }
 
   @Override
-  public se.bjurr.violations.lib.util.Optional<String> findCommentTemplate() {
+  public Optional<String> findCommentTemplate() {
     return violationCommentsToGitLabApi.findCommentTemplate();
   }
 }
