@@ -3,6 +3,15 @@
 
 Changelog of Violation comments to gitlab lib.
 
+## 1.55
+### No issue
+
+**Avoiding NPE when line not in diff**
+
+
+[23d3246e099c21e](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/23d3246e099c21e) Tomas Bjerre *2018-10-08 16:16:29*
+
+
 ## 1.54
 ### No issue
 
