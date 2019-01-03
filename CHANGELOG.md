@@ -3,6 +3,15 @@
 
 Changelog of Violation comments to gitlab lib.
 
+## 1.56
+### No issue
+
+**Correcting AnsibleLint parsing**
+
+
+[908e13ef04ff2f7](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/908e13ef04ff2f7) Tomas Bjerre *2019-01-03 17:19:34*
+
+
 ## 1.55
 ### No issue
 
