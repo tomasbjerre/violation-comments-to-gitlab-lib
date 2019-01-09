@@ -3,6 +3,15 @@
 
 Changelog of Violation comments to gitlab lib.
 
+## 1.57
+### No issue
+
+**Making CodeNarc respect source directory**
+
+
+[49da006cc38f8ce](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/49da006cc38f8ce) Tomas Bjerre *2019-01-09 19:14:53*
+
+
 ## 1.56
 ### No issue
 
