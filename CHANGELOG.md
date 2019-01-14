@@ -3,6 +3,15 @@
 
 Changelog of Violation comments to gitlab lib.
 
+## 1.58
+### No issue
+
+**Avoiding faulty slash with CodeNarc**
+
+
+[abb900e35df310d](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/abb900e35df310d) Tomas Bjerre *2019-01-14 17:37:15*
+
+
 ## 1.57
 ### No issue
 
