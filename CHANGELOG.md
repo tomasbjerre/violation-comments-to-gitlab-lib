@@ -3,6 +3,16 @@
 
 Changelog of Violation comments to gitlab lib.
 
+## Unreleased
+### No issue
+
+**Switching to Gitlab4j-api**
+
+ * Waiting for https://github.com/gmessner/gitlab4j-api/issues/291 
+
+[0f5dd3c28b12dae](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/0f5dd3c28b12dae) Tomas Bjerre *2019-02-19 18:13:06*
+
+
 ## 1.59
 ### No issue
 
