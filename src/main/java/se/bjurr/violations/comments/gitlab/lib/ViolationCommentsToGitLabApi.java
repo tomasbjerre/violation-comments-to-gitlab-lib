@@ -11,8 +11,7 @@ import java.util.Optional;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.gitlab.api.AuthMethod;
-import org.gitlab.api.TokenType;
+import org.gitlab4j.api.Constants.TokenType;
 import se.bjurr.violations.comments.lib.CommentsProvider;
 import se.bjurr.violations.comments.lib.ViolationsLogger;
 import se.bjurr.violations.lib.model.Violation;
@@ -33,7 +32,6 @@ public class ViolationCommentsToGitLabApi {
   private String hostUrl;
   private String apiToken;
   private TokenType tokenType;
-  private AuthMethod method;
   private boolean ignoreCertificateErrors;
   private String projectId;
   private Integer mergeRequestIid;
@@ -52,6 +50,9 @@ public class ViolationCommentsToGitLabApi {
           Logger.getLogger(ViolationsLogger.class.getSimpleName()).log(level, string, t);
         }
       };
+  private String proxyServer;
+  private String proxyUser;
+  private String proxyPassword;
 
   public ViolationCommentsToGitLabApi withViolationsLogger(
       final ViolationsLogger violationsLogger) {
@@ -92,15 +93,6 @@ public class ViolationCommentsToGitLabApi {
 
   public ViolationCommentsToGitLabApi setTokenType(final TokenType tokenType) {
     this.tokenType = tokenType;
-    return this;
-  }
-
-  public AuthMethod getMethod() {
-    return method;
-  }
-
-  public ViolationCommentsToGitLabApi setMethod(final AuthMethod method) {
-    this.method = method;
     return this;
   }
 
@@ -218,5 +210,32 @@ public class ViolationCommentsToGitLabApi {
 
   public Optional<String> findCommentTemplate() {
     return ofNullable(commentTemplate);
+  }
+
+  public ViolationCommentsToGitLabApi setProxyUser(final String proxyUser) {
+    this.proxyUser = proxyUser;
+    return this;
+  }
+
+  public ViolationCommentsToGitLabApi setProxyPassword(final String proxyPassword) {
+    this.proxyPassword = proxyPassword;
+    return this;
+  }
+
+  public ViolationCommentsToGitLabApi setProxyServer(final String proxyServer) {
+    this.proxyServer = proxyServer;
+    return this;
+  }
+
+  public Optional<String> findProxyServer() {
+    return Optional.ofNullable(proxyServer);
+  }
+
+  public Optional<String> findProxyPassword() {
+    return Optional.ofNullable(proxyPassword);
+  }
+
+  public Optional<String> findProxyUser() {
+    return Optional.ofNullable(proxyUser);
   }
 }

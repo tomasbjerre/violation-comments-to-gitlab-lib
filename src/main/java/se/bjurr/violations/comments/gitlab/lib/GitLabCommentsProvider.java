@@ -1,19 +1,25 @@
 package se.bjurr.violations.comments.gitlab.lib;
 
-import static java.util.logging.Level.INFO;
 import static java.util.logging.Level.SEVERE;
 
-import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
-import org.gitlab.api.AuthMethod;
-import org.gitlab.api.GitlabAPI;
-import org.gitlab.api.TokenType;
-import org.gitlab.api.models.GitlabCommitDiff;
-import org.gitlab.api.models.GitlabMergeRequest;
-import org.gitlab.api.models.GitlabNote;
-import org.gitlab.api.models.GitlabProject;
+import java.util.logging.Level;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
+import org.gitlab4j.api.Constants;
+import org.gitlab4j.api.Constants.TokenType;
+import org.gitlab4j.api.GitLabApi;
+import org.gitlab4j.api.GitLabApiException;
+import org.gitlab4j.api.ProxyClientConfig;
+import org.gitlab4j.api.models.Diff;
+import org.gitlab4j.api.models.MergeRequest;
+import org.gitlab4j.api.models.Note;
+import org.gitlab4j.api.models.Position;
+import org.gitlab4j.api.models.Project;
 import se.bjurr.violations.comments.lib.CommentsProvider;
 import se.bjurr.violations.comments.lib.PatchParser;
 import se.bjurr.violations.comments.lib.ViolationsLogger;
@@ -22,38 +28,44 @@ import se.bjurr.violations.comments.lib.model.Comment;
 
 public class GitLabCommentsProvider implements CommentsProvider {
   private final ViolationCommentsToGitLabApi violationCommentsToGitLabApi;
-
-  private final GitlabAPI gitlabApi;
   private final ViolationsLogger violationsLogger;
-
-  private GitlabProject project;
-
-  private GitlabMergeRequest mergeRequest;
+  private final GitLabApi gitLabApi;
+  private final Project project;
+  private final MergeRequest mergeRequest;
 
   public GitLabCommentsProvider(
-      ViolationsLogger violationsLogger,
+      final ViolationsLogger violationsLogger,
       final ViolationCommentsToGitLabApi violationCommentsToGitLabApi) {
     this.violationsLogger = violationsLogger;
     final String hostUrl = violationCommentsToGitLabApi.getHostUrl();
     final String apiToken = violationCommentsToGitLabApi.getApiToken();
-    final TokenType tokenType = violationCommentsToGitLabApi.getTokenType();
-    final AuthMethod method = violationCommentsToGitLabApi.getMethod();
-    gitlabApi = GitlabAPI.connect(hostUrl, apiToken, tokenType, method);
-
-    final boolean ignoreCertificateErrors =
-        violationCommentsToGitLabApi.isIgnoreCertificateErrors();
-    gitlabApi.ignoreCertificateErrors(ignoreCertificateErrors);
+    final Map<String, Object> proxyConfig = getProxyConfig(violationCommentsToGitLabApi);
+    final TokenType tokenType =
+        TokenType.valueOf(violationCommentsToGitLabApi.getTokenType().name());
+    final String secretToken = null;
+    this.gitLabApi = new GitLabApi(hostUrl, tokenType, apiToken, secretToken, proxyConfig);
+    gitLabApi.setIgnoreCertificateErrors(violationCommentsToGitLabApi.isIgnoreCertificateErrors());
+    gitLabApi.enableRequestResponseLogging(Level.INFO);
+    gitLabApi.withRequestResponseLogging(
+        new Logger(GitLabCommentsProvider.class.getName(), null) {
+          @Override
+          public void log(final LogRecord record) {
+            violationsLogger.log(record.getLevel(), record.getMessage());
+          }
+        },
+        Level.FINE);
 
     final String projectId = violationCommentsToGitLabApi.getProjectId();
     try {
-      project = gitlabApi.getProject(projectId);
-    } catch (final Throwable e) {
+      this.project = gitLabApi.getProjectApi().getProject(projectId);
+    } catch (final GitLabApiException e) {
       throw new RuntimeException("Could not get project " + projectId, e);
     }
 
     final Integer mergeRequestId = violationCommentsToGitLabApi.getMergeRequestIid();
     try {
-      mergeRequest = gitlabApi.getMergeRequestChanges(project.getId(), mergeRequestId);
+      mergeRequest =
+          gitLabApi.getMergeRequestApi().getMergeRequest(project.getId(), mergeRequestId);
     } catch (final Throwable e) {
       throw new RuntimeException("Could not get MR " + projectId + " " + mergeRequestId, e);
     }
@@ -61,47 +73,76 @@ public class GitLabCommentsProvider implements CommentsProvider {
     this.violationCommentsToGitLabApi = violationCommentsToGitLabApi;
   }
 
+  private Map<String, Object> getProxyConfig(final ViolationCommentsToGitLabApi api) {
+    if (api.findProxyServer().isPresent()) {
+      if (!api.findProxyUser().isPresent() || !api.findProxyPassword().isPresent()) {
+        return ProxyClientConfig.createProxyClientConfig(api.findProxyServer().get());
+      }
+      if (api.findProxyUser().isPresent() && api.findProxyPassword().isPresent()) {
+        return ProxyClientConfig.createProxyClientConfig(
+            api.findProxyServer().get(), api.findProxyUser().get(), api.findProxyPassword().get());
+      }
+    }
+    return null;
+  }
+
   @Override
   public void createCommentWithAllSingleFileComments(final String comment) {
     markMergeRequestAsWIP();
     try {
-      gitlabApi.createNote(mergeRequest, comment);
+      this.gitLabApi
+          .getNotesApi()
+          .createMergeRequestNote(project.getId(), this.mergeRequest.getIid(), comment);
     } catch (final Throwable e) {
       violationsLogger.log(SEVERE, "Could create comment " + comment, e);
     }
   }
 
   /**
-   * Set the {@link GitlabMergeRequest} as "Work in Progress" if configured to do so by the
-   * shouldSetWIP flag.
+   * Set the merge request as "Work in Progress" if configured to do so by the shouldSetWIP flag.
    */
   private void markMergeRequestAsWIP() {
     if (!this.violationCommentsToGitLabApi.getShouldSetWIP()) {
       return;
     }
+
     final String currentTitle = mergeRequest.getTitle();
-    if (currentTitle.startsWith("WIP:")) {
+    final String startTitle = "WIP: (VIOLATIONS) ";
+    if (currentTitle.startsWith(startTitle)) {
+      // To avoid setting WIP again on new comments
       return;
     }
-    final Serializable projectId = violationCommentsToGitLabApi.getProjectId();
-    final Integer mergeRequestIid = violationCommentsToGitLabApi.getMergeRequestIid();
+    final Integer projectId = this.project.getId();
+    final Integer mergeRequestIid = this.mergeRequest.getIid();
     final String targetBranch = null;
     final Integer assigneeId = null;
-    final String title = "WIP: >>> CONTAINS VIOLATIONS! <<< " + currentTitle;
+    final String title = startTitle + currentTitle;
     final String description = null;
-    final String stateEvent = null;
+    final Constants.StateEvent stateEvent = null;
     final String labels = null;
+    final Integer milestoneId = null;
+    final Boolean removeSourceBranch = null;
+    final Boolean squash = null;
+    final Boolean discussionLocked = null;
+    final Boolean allowCollaboration = null;
     try {
-      mergeRequest.setTitle(title); // To avoid setting WIP again on new comments
-      gitlabApi.updateMergeRequest(
-          projectId,
-          mergeRequestIid,
-          targetBranch,
-          assigneeId,
-          title,
-          description,
-          stateEvent,
-          labels);
+      mergeRequest.setTitle(title);
+      gitLabApi
+          .getMergeRequestApi()
+          .updateMergeRequest(
+              projectId,
+              mergeRequestIid,
+              targetBranch,
+              title,
+              assigneeId,
+              description,
+              stateEvent,
+              labels,
+              milestoneId,
+              removeSourceBranch,
+              squash,
+              discussionLocked,
+              allowCollaboration);
     } catch (final Throwable e) {
       violationsLogger.log(SEVERE, e.getMessage(), e);
     }
@@ -112,28 +153,32 @@ public class GitLabCommentsProvider implements CommentsProvider {
       final ChangedFile file, final Integer newLine, final String content) {
     markMergeRequestAsWIP();
     final Integer projectId = project.getId();
-    final String baseSha = mergeRequest.getBaseSha();
-    final String startSha = mergeRequest.getStartSha();
-    final String headSha = mergeRequest.getHeadSha();
+    final String baseSha = mergeRequest.getDiffRefs().getBaseSha();
+    final String startSha = mergeRequest.getDiffRefs().getStartSha();
+    final String headSha = mergeRequest.getDiffRefs().getHeadSha();
     final String patchString = file.getSpecifics().get(0);
     final String oldPath = file.getSpecifics().get(1);
     final String newPath = file.getSpecifics().get(2);
-    Integer oldLine =
+    final Integer oldLine =
         new PatchParser(patchString) //
             .findOldLine(newLine) //
             .orElse(null);
     try {
-      gitlabApi.createTextDiscussion(
-          mergeRequest,
-          content,
-          null,
-          baseSha,
-          startSha,
-          headSha,
-          newPath,
-          newLine,
-          oldPath,
-          oldLine);
+      final Date date = null;
+      final String positionHash = null;
+      final Position position = new Position();
+      position.setPositionType(Position.PositionType.TEXT);
+      position.setBaseSha(baseSha);
+      position.setStartSha(startSha);
+      position.setHeadSha(headSha);
+      position.setNewLine(newLine);
+      position.setNewPath(newPath);
+      position.setOldLine(oldLine);
+      position.setOldPath(oldPath);
+      gitLabApi
+          .getDiscussionsApi()
+          .createMergeRequestDiscussion(
+              projectId, mergeRequest.getIid(), content, date, positionHash, position);
     } catch (final Throwable e) {
       final String lineSeparator = System.lineSeparator();
       violationsLogger.log(
@@ -170,8 +215,11 @@ public class GitLabCommentsProvider implements CommentsProvider {
   public List<Comment> getComments() {
     final List<Comment> found = new ArrayList<>();
     try {
-      final List<GitlabNote> notes = gitlabApi.getAllNotes(mergeRequest);
-      for (final GitlabNote note : notes) {
+
+      final List<Note> notes =
+          gitLabApi.getNotesApi().getMergeRequestNotes(project.getId(), mergeRequest.getIid());
+
+      for (final Note note : notes) {
         final String identifier = note.getId() + "";
         final String content = note.getBody();
         final String type = "PR";
@@ -188,7 +236,7 @@ public class GitLabCommentsProvider implements CommentsProvider {
   @Override
   public List<ChangedFile> getFiles() {
     final List<ChangedFile> changedFiles = new ArrayList<>();
-    for (final GitlabCommitDiff change : mergeRequest.getChanges()) {
+    for (final Diff change : mergeRequest.getChanges()) {
       final String filename = change.getNewPath();
       final List<String> specifics = new ArrayList<>();
       final String patchString = change.getDiff();
@@ -206,17 +254,12 @@ public class GitLabCommentsProvider implements CommentsProvider {
   public void removeComments(final List<Comment> comments) {
     for (final Comment comment : comments) {
       try {
-        final GitlabNote noteToDelete = new GitlabNote();
-        noteToDelete.setId(Integer.parseInt(comment.getIdentifier()));
-        gitlabApi.deleteNote(mergeRequest, noteToDelete);
+        final int noteId = Integer.parseInt(comment.getIdentifier());
+        this.gitLabApi
+            .getNotesApi()
+            .deleteMergeRequestNote(project.getId(), mergeRequest.getIid(), noteId);
       } catch (final Throwable e) {
-        violationsLogger.log(
-            INFO,
-            "Exception thrown when delete note "
-                + comment.getIdentifier()
-                + ". This is probably because of "
-                + "https://github.com/timols/java-gitlab-api/issues/321");
-        // violationsLogger.log(SEVERE, "Could not delete note " + comment, e);
+        violationsLogger.log(SEVERE, "Could not delete note " + comment, e);
       }
     }
   }
@@ -224,7 +267,9 @@ public class GitLabCommentsProvider implements CommentsProvider {
   @Override
   public boolean shouldComment(final ChangedFile changedFile, final Integer line) {
     final String patchString = changedFile.getSpecifics().get(0);
-    if (!violationCommentsToGitLabApi.getCommentOnlyChangedContent()) return true;
+    if (!violationCommentsToGitLabApi.getCommentOnlyChangedContent()) {
+      return true;
+    }
     return new PatchParser(patchString) //
         .isLineInDiff(line);
   }
