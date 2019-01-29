@@ -3,6 +3,15 @@
 
 Changelog of Violation comments to gitlab lib.
 
+## 1.59
+### No issue
+
+**MSCPP and IAR**
+
+
+[d77f7f3f9ccd0a8](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/d77f7f3f9ccd0a8) Tomas Bjerre *2019-01-29 17:25:24*
+
+
 ## 1.58
 ### No issue
 
