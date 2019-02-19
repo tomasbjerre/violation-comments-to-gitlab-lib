@@ -54,8 +54,7 @@ public class ViolationCommentsToGitLabApi {
   private String proxyUser;
   private String proxyPassword;
 
-  public ViolationCommentsToGitLabApi withViolationsLogger(
-      final ViolationsLogger violationsLogger) {
+  public ViolationCommentsToGitLabApi setViolationsLogger(final ViolationsLogger violationsLogger) {
     this.violationsLogger = violationsLogger;
     return this;
   }
@@ -74,7 +73,7 @@ public class ViolationCommentsToGitLabApi {
   }
 
   public ViolationCommentsToGitLabApi setHostUrl(final String hostUrl) {
-    this.hostUrl = hostUrl;
+    this.hostUrl = emptyToNull(hostUrl);
     return this;
   }
 
@@ -83,7 +82,7 @@ public class ViolationCommentsToGitLabApi {
   }
 
   public ViolationCommentsToGitLabApi setApiToken(final String apiToken) {
-    this.apiToken = apiToken;
+    this.apiToken = emptyToNull(apiToken);
     return this;
   }
 
@@ -111,7 +110,7 @@ public class ViolationCommentsToGitLabApi {
   }
 
   public ViolationCommentsToGitLabApi setProjectId(final String projectId) {
-    this.projectId = projectId;
+    this.projectId = emptyToNull(projectId);
     return this;
   }
 
@@ -203,7 +202,7 @@ public class ViolationCommentsToGitLabApi {
     return shouldSetWIP;
   }
 
-  public ViolationCommentsToGitLabApi withCommentTemplate(final String commentTemplate) {
+  public ViolationCommentsToGitLabApi setCommentTemplate(final String commentTemplate) {
     this.commentTemplate = commentTemplate;
     return this;
   }
@@ -213,17 +212,17 @@ public class ViolationCommentsToGitLabApi {
   }
 
   public ViolationCommentsToGitLabApi setProxyUser(final String proxyUser) {
-    this.proxyUser = proxyUser;
+    this.proxyUser = emptyToNull(proxyUser);
     return this;
   }
 
   public ViolationCommentsToGitLabApi setProxyPassword(final String proxyPassword) {
-    this.proxyPassword = proxyPassword;
+    this.proxyPassword = emptyToNull(proxyPassword);
     return this;
   }
 
   public ViolationCommentsToGitLabApi setProxyServer(final String proxyServer) {
-    this.proxyServer = proxyServer;
+    this.proxyServer = emptyToNull(proxyServer);
     return this;
   }
 
@@ -237,5 +236,15 @@ public class ViolationCommentsToGitLabApi {
 
   public Optional<String> findProxyUser() {
     return Optional.ofNullable(proxyUser);
+  }
+
+  private String emptyToNull(final String str) {
+    if (str == null) {
+      return null;
+    }
+    if (str.trim().isEmpty()) {
+      return null;
+    }
+    return str.trim();
   }
 }
