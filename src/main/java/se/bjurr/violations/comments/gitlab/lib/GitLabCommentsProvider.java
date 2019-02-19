@@ -27,42 +27,46 @@ import se.bjurr.violations.comments.lib.model.ChangedFile;
 import se.bjurr.violations.comments.lib.model.Comment;
 
 public class GitLabCommentsProvider implements CommentsProvider {
-  private final ViolationCommentsToGitLabApi violationCommentsToGitLabApi;
+  private static final String MASK = "HIDDEN";
+  private final ViolationCommentsToGitLabApi api;
   private final ViolationsLogger violationsLogger;
   private final GitLabApi gitLabApi;
   private final Project project;
   private final MergeRequest mergeRequest;
 
   public GitLabCommentsProvider(
-      final ViolationsLogger violationsLogger,
-      final ViolationCommentsToGitLabApi violationCommentsToGitLabApi) {
+      final ViolationsLogger violationsLogger, final ViolationCommentsToGitLabApi api) {
     this.violationsLogger = violationsLogger;
-    final String hostUrl = violationCommentsToGitLabApi.getHostUrl();
-    final String apiToken = violationCommentsToGitLabApi.getApiToken();
-    final Map<String, Object> proxyConfig = getProxyConfig(violationCommentsToGitLabApi);
-    final TokenType tokenType =
-        TokenType.valueOf(violationCommentsToGitLabApi.getTokenType().name());
+    final String hostUrl = api.getHostUrl();
+    final String apiToken = api.getApiToken();
+    final Map<String, Object> proxyConfig = getProxyConfig(api);
+    final TokenType tokenType = TokenType.valueOf(api.getTokenType().name());
     final String secretToken = null;
     this.gitLabApi = new GitLabApi(hostUrl, tokenType, apiToken, secretToken, proxyConfig);
-    gitLabApi.setIgnoreCertificateErrors(violationCommentsToGitLabApi.isIgnoreCertificateErrors());
+    gitLabApi.setIgnoreCertificateErrors(api.isIgnoreCertificateErrors());
     gitLabApi.enableRequestResponseLogging(Level.INFO);
     gitLabApi.withRequestResponseLogging(
         new Logger(GitLabCommentsProvider.class.getName(), null) {
           @Override
           public void log(final LogRecord record) {
-            violationsLogger.log(record.getLevel(), record.getMessage());
+            final String masked =
+                record
+                    .getMessage() //
+                    .replace(apiToken, MASK) //
+                    .replace(api.findProxyPassword().orElse(""), MASK);
+            violationsLogger.log(record.getLevel(), masked);
           }
         },
         Level.FINE);
 
-    final String projectId = violationCommentsToGitLabApi.getProjectId();
+    final String projectId = api.getProjectId();
     try {
       this.project = gitLabApi.getProjectApi().getProject(projectId);
     } catch (final GitLabApiException e) {
       throw new RuntimeException("Could not get project " + projectId, e);
     }
 
-    final Integer mergeRequestId = violationCommentsToGitLabApi.getMergeRequestIid();
+    final Integer mergeRequestId = api.getMergeRequestIid();
     try {
       mergeRequest =
           gitLabApi.getMergeRequestApi().getMergeRequestChanges(project.getId(), mergeRequestId);
@@ -70,7 +74,7 @@ public class GitLabCommentsProvider implements CommentsProvider {
       throw new RuntimeException("Could not get MR " + projectId + " " + mergeRequestId, e);
     }
 
-    this.violationCommentsToGitLabApi = violationCommentsToGitLabApi;
+    this.api = api;
   }
 
   private Map<String, Object> getProxyConfig(final ViolationCommentsToGitLabApi api) {
@@ -102,7 +106,7 @@ public class GitLabCommentsProvider implements CommentsProvider {
    * Set the merge request as "Work in Progress" if configured to do so by the shouldSetWIP flag.
    */
   private void markMergeRequestAsWIP() {
-    if (!this.violationCommentsToGitLabApi.getShouldSetWIP()) {
+    if (!this.api.getShouldSetWIP()) {
       return;
     }
 
@@ -267,7 +271,7 @@ public class GitLabCommentsProvider implements CommentsProvider {
   @Override
   public boolean shouldComment(final ChangedFile changedFile, final Integer line) {
     final String patchString = changedFile.getSpecifics().get(0);
-    if (!violationCommentsToGitLabApi.getCommentOnlyChangedContent()) {
+    if (!api.getCommentOnlyChangedContent()) {
       return true;
     }
     return new PatchParser(patchString) //
@@ -276,21 +280,21 @@ public class GitLabCommentsProvider implements CommentsProvider {
 
   @Override
   public boolean shouldCreateCommentWithAllSingleFileComments() {
-    return violationCommentsToGitLabApi.getCreateCommentWithAllSingleFileComments();
+    return api.getCreateCommentWithAllSingleFileComments();
   }
 
   @Override
   public boolean shouldCreateSingleFileComment() {
-    return violationCommentsToGitLabApi.getCreateSingleFileComments();
+    return api.getCreateSingleFileComments();
   }
 
   @Override
   public boolean shouldKeepOldComments() {
-    return violationCommentsToGitLabApi.getShouldKeepOldComments();
+    return api.getShouldKeepOldComments();
   }
 
   @Override
   public Optional<String> findCommentTemplate() {
-    return violationCommentsToGitLabApi.findCommentTemplate();
+    return api.findCommentTemplate();
   }
 }
