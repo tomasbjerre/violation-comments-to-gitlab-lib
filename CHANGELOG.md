@@ -3,6 +3,15 @@
 
 Changelog of Violation comments to gitlab lib.
 
+## 1.62
+### No issue
+
+**Trimming strings**
+
+
+[1e3ba1f33f8c73b](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/1e3ba1f33f8c73b) Tomas Bjerre *2019-02-19 18:42:41*
+
+
 ## 1.61
 ### No issue
 
