@@ -10,6 +10,7 @@ import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
+
 import org.gitlab4j.api.Constants;
 import org.gitlab4j.api.Constants.TokenType;
 import org.gitlab4j.api.GitLabApi;
@@ -20,6 +21,7 @@ import org.gitlab4j.api.models.MergeRequest;
 import org.gitlab4j.api.models.Note;
 import org.gitlab4j.api.models.Position;
 import org.gitlab4j.api.models.Project;
+
 import se.bjurr.violations.comments.lib.CommentsProvider;
 import se.bjurr.violations.comments.lib.PatchParser;
 import se.bjurr.violations.comments.lib.ViolationsLogger;
@@ -65,7 +67,7 @@ public class GitLabCommentsProvider implements CommentsProvider {
     final Integer mergeRequestId = violationCommentsToGitLabApi.getMergeRequestIid();
     try {
       mergeRequest =
-          gitLabApi.getMergeRequestApi().getMergeRequest(project.getId(), mergeRequestId);
+          gitLabApi.getMergeRequestApi().getMergeRequestChanges(project.getId(), mergeRequestId);
     } catch (final Throwable e) {
       throw new RuntimeException("Could not get MR " + projectId + " " + mergeRequestId, e);
     }
