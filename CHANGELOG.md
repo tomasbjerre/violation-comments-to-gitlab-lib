@@ -3,14 +3,19 @@
 
 Changelog of Violation comments to gitlab lib.
 
-## Unreleased
+## 1.61
 ### No issue
+
+**Bumping version, faulty release**
+
+
+[b6620f12dc2fcd0](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/b6620f12dc2fcd0) Tomas Bjerre *2019-02-19 18:20:30*
 
 **Switching to Gitlab4j-api**
 
  * Waiting for https://github.com/gmessner/gitlab4j-api/issues/291 
 
-[0f5dd3c28b12dae](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/0f5dd3c28b12dae) Tomas Bjerre *2019-02-19 18:13:06*
+[002744cca66203b](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/002744cca66203b) Tomas Bjerre *2019-02-19 18:15:00*
 
 
 ## 1.59
