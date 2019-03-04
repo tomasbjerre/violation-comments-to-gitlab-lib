@@ -44,20 +44,21 @@ public class GitLabCommentsProvider implements CommentsProvider {
     final String secretToken = null;
     this.gitLabApi = new GitLabApi(hostUrl, tokenType, apiToken, secretToken, proxyConfig);
     gitLabApi.setIgnoreCertificateErrors(api.isIgnoreCertificateErrors());
-    gitLabApi.enableRequestResponseLogging(Level.INFO);
     gitLabApi.withRequestResponseLogging(
         new Logger(GitLabCommentsProvider.class.getName(), null) {
           @Override
           public void log(final LogRecord record) {
-            final String masked =
+            String masked =
                 record
                     .getMessage() //
-                    .replace(apiToken, MASK) //
-                    .replace(api.findProxyPassword().orElse(""), MASK);
+                    .replace(apiToken, MASK);
+            if (api.findProxyPassword().isPresent()) {
+              masked = masked.replace(api.findProxyPassword().get(), MASK);
+            }
             violationsLogger.log(record.getLevel(), masked);
           }
         },
-        Level.FINE);
+        Level.INFO);
 
     final String projectId = api.getProjectId();
     try {
