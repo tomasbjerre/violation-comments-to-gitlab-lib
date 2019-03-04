@@ -3,6 +3,15 @@
 
 Changelog of Violation comments to gitlab lib.
 
+## 1.66
+### No issue
+
+**Correcting logging**
+
+
+[4914eac090698bc](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/4914eac090698bc) Tomas Bjerre *2019-03-04 05:08:30*
+
+
 ## 1.65
 ### No issue
 
