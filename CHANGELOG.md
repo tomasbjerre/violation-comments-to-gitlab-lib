@@ -3,8 +3,13 @@
 
 Changelog of Violation comments to gitlab lib.
 
-## Unreleased
+## 1.65
 ### No issue
+
+**Masking credentials**
+
+
+[37386303df674cf](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/37386303df674cf) Tomas Bjerre *2019-03-04 04:46:06*
 
 **Getting changes in MR**
 
