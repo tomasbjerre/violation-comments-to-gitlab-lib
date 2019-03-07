@@ -3,6 +3,15 @@
 
 Changelog of Violation comments to gitlab lib.
 
+## 1.67
+### No issue
+
+**golangci-lint**
+
+
+[bbaab9a97cb68ad](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/bbaab9a97cb68ad) Tomas Bjerre *2019-03-07 15:59:51*
+
+
 ## 1.66
 ### No issue
 
