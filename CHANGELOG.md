@@ -3,6 +3,15 @@
 
 Changelog of Violation comments to gitlab lib.
 
+## 1.68
+### No issue
+
+**Klocwork line numbersus**
+
+
+[439c1ee3e4180be](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/439c1ee3e4180be) Tomas Bjerre *2019-03-13 19:17:19*
+
+
 ## 1.67
 ### No issue
 
