@@ -3,6 +3,15 @@
 
 Changelog of Violation comments to gitlab lib.
 
+## 1.69
+### No issue
+
+**Sonar Report**
+
+
+[de81cc0006519f2](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/de81cc0006519f2) Tomas Bjerre *2019-03-23 14:35:50*
+
+
 ## 1.68
 ### No issue
 
