@@ -3,6 +3,15 @@
 
 Changelog of Violation comments to gitlab lib.
 
+## 1.70
+### No issue
+
+**Correcting Sonar severity**
+
+
+[608ac7bab568fd8](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/608ac7bab568fd8) Tomas Bjerre *2019-03-30 06:03:00*
+
+
 ## 1.69
 ### No issue
 
