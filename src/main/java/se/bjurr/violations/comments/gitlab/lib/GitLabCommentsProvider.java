@@ -298,4 +298,14 @@ public class GitLabCommentsProvider implements CommentsProvider {
   public Optional<String> findCommentTemplate() {
     return api.findCommentTemplate();
   }
+
+  @Override
+  public Integer getMaxNumberOfComments() {
+    return api.getMaxNumberOfComments();
+  }
+
+  @Override
+  public Integer getMaxCommentSize() {
+    return api.getMaxCommentSize();
+  }
 }

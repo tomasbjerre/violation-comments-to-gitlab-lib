@@ -53,6 +53,8 @@ public class ViolationCommentsToGitLabApi {
   private String proxyServer;
   private String proxyUser;
   private String proxyPassword;
+  private int maxNumberOfComments;
+  private Integer maxCommentSize;
 
   public ViolationCommentsToGitLabApi setViolationsLogger(final ViolationsLogger violationsLogger) {
     this.violationsLogger = violationsLogger;
@@ -246,5 +248,23 @@ public class ViolationCommentsToGitLabApi {
       return null;
     }
     return str.trim();
+  }
+
+  public ViolationCommentsToGitLabApi setMaxCommentSize(final Integer maxCommentSize) {
+    this.maxCommentSize = maxCommentSize;
+    return this;
+  }
+
+  public ViolationCommentsToGitLabApi setMaxNumberOfComments(final int maxNumberOfComments) {
+    this.maxNumberOfComments = maxNumberOfComments;
+    return this;
+  }
+
+  public int getMaxNumberOfComments() {
+    return maxNumberOfComments;
+  }
+
+  public Integer getMaxCommentSize() {
+    return maxCommentSize;
   }
 }
