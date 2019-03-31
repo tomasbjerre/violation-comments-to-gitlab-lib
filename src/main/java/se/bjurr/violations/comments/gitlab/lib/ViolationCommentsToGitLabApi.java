@@ -3,14 +3,17 @@ package se.bjurr.violations.comments.gitlab.lib;
 import static java.util.Optional.ofNullable;
 import static se.bjurr.violations.comments.lib.CommentsCreator.createComments;
 
-import com.github.mustachejava.resolver.DefaultResolver;
 import java.io.Reader;
 import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.gitlab4j.api.Constants.TokenType;
+
+import com.github.mustachejava.resolver.DefaultResolver;
+
 import se.bjurr.violations.comments.lib.CommentsProvider;
 import se.bjurr.violations.comments.lib.ViolationsLogger;
 import se.bjurr.violations.lib.model.Violation;
@@ -52,7 +55,7 @@ public class ViolationCommentsToGitLabApi {
   private String proxyServer;
   private String proxyUser;
   private String proxyPassword;
-  private int maxNumberOfComments;
+  private Integer maxNumberOfComments;
   private Integer maxCommentSize;
 
   public ViolationCommentsToGitLabApi setViolationsLogger(final ViolationsLogger violationsLogger) {
@@ -259,7 +262,7 @@ public class ViolationCommentsToGitLabApi {
     return this;
   }
 
-  public int getMaxNumberOfComments() {
+  public Integer getMaxNumberOfComments() {
     return maxNumberOfComments;
   }
 
