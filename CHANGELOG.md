@@ -3,6 +3,15 @@
 
 Changelog of Violation comments to gitlab lib.
 
+## 1.75
+### No issue
+
+**maxNumberOfViolations**
+
+
+[31e16d15ea3bc3e](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/31e16d15ea3bc3e) Tomas Bjerre *2019-03-31 11:50:23*
+
+
 ## 1.74
 ### No issue
 
