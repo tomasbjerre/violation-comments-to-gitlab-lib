@@ -3,6 +3,15 @@
 
 Changelog of Violation comments to gitlab lib.
 
+## 1.76
+### No issue
+
+**Cpplint correction to handle line None**
+
+
+[dd9e6af0fba4b97](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/dd9e6af0fba4b97) Tomas Bjerre *2019-04-24 15:54:15*
+
+
 ## 1.75
 ### No issue
 
