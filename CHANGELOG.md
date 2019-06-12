@@ -3,6 +3,15 @@
 
 Changelog of Violation comments to gitlab lib.
 
+## Unreleased
+### No issue
+
+**doc**
+
+
+[4707656a41641bb](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/4707656a41641bb) Tomas Bjerre *2019-06-01 13:20:43*
+
+
 ## 1.76
 ### No issue
 
