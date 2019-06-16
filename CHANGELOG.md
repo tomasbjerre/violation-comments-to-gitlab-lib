@@ -3,6 +3,15 @@
 
 Changelog of Violation comments to gitlab lib.
 
+## 1.78
+### No issue
+
+**junit**
+
+
+[d1d54b75517825d](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/d1d54b75517825d) Tomas Bjerre *2019-06-16 16:33:03*
+
+
 ## 1.77
 ### No issue
 
