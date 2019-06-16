@@ -54,6 +54,7 @@ public class ViolationCommentsToGitLabApi {
   private String proxyPassword;
   private Integer maxNumberOfViolations;
   private Integer maxCommentSize;
+  private boolean shouldCommentOnlyChangedFiles = true;
 
   public ViolationCommentsToGitLabApi setViolationsLogger(final ViolationsLogger violationsLogger) {
     this.violationsLogger = violationsLogger;
@@ -148,6 +149,10 @@ public class ViolationCommentsToGitLabApi {
     return commentOnlyChangedContent;
   }
 
+  public boolean getShouldCommentOnlyChangedFiles() {
+    return shouldCommentOnlyChangedFiles;
+  }
+
   public boolean getCreateCommentWithAllSingleFileComments() {
     return createCommentWithAllSingleFileComments;
   }
@@ -187,6 +192,12 @@ public class ViolationCommentsToGitLabApi {
   public ViolationCommentsToGitLabApi setShouldKeepOldComments(
       final boolean shouldKeepOldComments) {
     this.shouldKeepOldComments = shouldKeepOldComments;
+    return this;
+  }
+
+  public ViolationCommentsToGitLabApi withShouldCommentOnlyChangedFiles(
+      final boolean shouldCommentOnlyChangedFiles) {
+    this.shouldCommentOnlyChangedFiles = shouldCommentOnlyChangedFiles;
     return this;
   }
 

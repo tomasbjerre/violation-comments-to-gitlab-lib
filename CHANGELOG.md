@@ -6,6 +6,11 @@ Changelog of Violation comments to gitlab lib.
 ## Unreleased
 ### No issue
 
+**Gradle 5**
+
+
+[41188ff96a35e6d](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/41188ff96a35e6d) Tomas Bjerre *2019-06-12 19:39:14*
+
 **doc**
 
 

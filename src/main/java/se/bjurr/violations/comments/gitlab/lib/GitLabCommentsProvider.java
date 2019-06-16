@@ -92,7 +92,7 @@ public class GitLabCommentsProvider implements CommentsProvider {
   }
 
   @Override
-  public void createCommentWithAllSingleFileComments(final String comment) {
+  public void createComment(final String comment) {
     markMergeRequestAsWIP();
     try {
       this.gitLabApi
@@ -307,5 +307,10 @@ public class GitLabCommentsProvider implements CommentsProvider {
   @Override
   public Integer getMaxCommentSize() {
     return api.getMaxCommentSize();
+  }
+
+  @Override
+  public boolean shouldCommentOnlyChangedFiles() {
+    return api.getShouldCommentOnlyChangedFiles();
   }
 }
