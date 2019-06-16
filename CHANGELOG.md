@@ -3,8 +3,13 @@
 
 Changelog of Violation comments to gitlab lib.
 
-## Unreleased
+## 1.77
 ### No issue
+
+**commentOnlyChangedFiles**
+
+
+[6c5992b442b2ead](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/6c5992b442b2ead) Tomas Bjerre *2019-06-16 07:41:56*
 
 **Gradle 5**
 
