@@ -3,8 +3,13 @@
 
 Changelog of Violation comments to gitlab lib.
 
-## Unreleased
+## 1.79
 ### No issue
+
+**Clearer error message when diffRefs null**
+
+
+[a288423d68dac60](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/a288423d68dac60) Tomas Bjerre *2019-10-08 13:43:23*
 
 **Create FUNDING.yml**
 
