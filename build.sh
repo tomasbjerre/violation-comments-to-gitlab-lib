@@ -1,2 +1,2 @@
 #!/bin/bash
-./gradlew clean gitChangelogTask eclipse build install -i
+./gradlew clean googleJavaFormat gitChangelogTask eclipse build install -i

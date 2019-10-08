@@ -17,6 +17,18 @@ import se.bjurr.violations.lib.model.Violation;
 import se.bjurr.violations.lib.util.Utils;
 
 public class ViolationCommentsToGitLabApi {
+  private static class ViolationsLoggerJavaLogger implements ViolationsLogger {
+    @Override
+    public void log(final Level level, final String string) {
+      Logger.getLogger(ViolationsLogger.class.getSimpleName()).log(level, string);
+    }
+
+    @Override
+    public void log(final Level level, final String string, final Throwable t) {
+      Logger.getLogger(ViolationsLogger.class.getSimpleName()).log(level, string, t);
+    }
+  }
+
   private static final String DEFAULT_VIOLATION_TEMPLATE_MUSTACH =
       "default-violation-template-gitlab.mustach";
 
@@ -37,18 +49,7 @@ public class ViolationCommentsToGitLabApi {
   private boolean shouldKeepOldComments;
   private boolean shouldSetWIP;
   private String commentTemplate;
-  private ViolationsLogger violationsLogger =
-      new ViolationsLogger() {
-        @Override
-        public void log(final Level level, final String string) {
-          Logger.getLogger(ViolationsLogger.class.getSimpleName()).log(level, string);
-        }
-
-        @Override
-        public void log(final Level level, final String string, final Throwable t) {
-          Logger.getLogger(ViolationsLogger.class.getSimpleName()).log(level, string, t);
-        }
-      };
+  private ViolationsLogger violationsLogger = new ViolationsLoggerJavaLogger();
   private String proxyServer;
   private String proxyUser;
   private String proxyPassword;

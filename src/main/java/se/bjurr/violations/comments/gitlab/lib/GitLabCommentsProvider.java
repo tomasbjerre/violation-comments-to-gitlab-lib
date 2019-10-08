@@ -2,10 +2,12 @@ package se.bjurr.violations.comments.gitlab.lib;
 
 import static java.util.logging.Level.SEVERE;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
@@ -16,6 +18,7 @@ import org.gitlab4j.api.GitLabApi;
 import org.gitlab4j.api.GitLabApiException;
 import org.gitlab4j.api.ProxyClientConfig;
 import org.gitlab4j.api.models.Diff;
+import org.gitlab4j.api.models.DiffRef;
 import org.gitlab4j.api.models.MergeRequest;
 import org.gitlab4j.api.models.Note;
 import org.gitlab4j.api.models.Position;
@@ -34,6 +37,7 @@ public class GitLabCommentsProvider implements CommentsProvider {
   private final Project project;
   private final MergeRequest mergeRequest;
 
+  @SuppressFBWarnings({"NP_LOAD_OF_KNOWN_NULL_VALUE", "SIC_INNER_SHOULD_BE_STATIC_ANON"})
   public GitLabCommentsProvider(
       final ViolationsLogger violationsLogger, final ViolationCommentsToGitLabApi api) {
     this.violationsLogger = violationsLogger;
@@ -106,6 +110,7 @@ public class GitLabCommentsProvider implements CommentsProvider {
   /**
    * Set the merge request as "Work in Progress" if configured to do so by the shouldSetWIP flag.
    */
+  @SuppressFBWarnings("NP_LOAD_OF_KNOWN_NULL_VALUE")
   private void markMergeRequestAsWIP() {
     if (!this.api.getShouldSetWIP()) {
       return;
@@ -154,21 +159,34 @@ public class GitLabCommentsProvider implements CommentsProvider {
   }
 
   @Override
+  @SuppressFBWarnings("NP_LOAD_OF_KNOWN_NULL_VALUE")
   public void createSingleFileComment(
       final ChangedFile file, final Integer newLine, final String content) {
     markMergeRequestAsWIP();
-    final Integer projectId = project.getId();
-    final String baseSha = mergeRequest.getDiffRefs().getBaseSha();
-    final String startSha = mergeRequest.getDiffRefs().getStartSha();
-    final String headSha = mergeRequest.getDiffRefs().getHeadSha();
-    final String patchString = file.getSpecifics().get(0);
-    final String oldPath = file.getSpecifics().get(1);
-    final String newPath = file.getSpecifics().get(2);
-    final Integer oldLine =
-        new PatchParser(patchString) //
-            .findOldLine(newLine) //
-            .orElse(null);
+    Integer projectId = null;
+    String baseSha = null;
+    String startSha = null;
+    String headSha = null;
+    String newPath = null;
+    final DiffRef diffRefs = mergeRequest.getDiffRefs();
+    Objects.requireNonNull(
+        diffRefs,
+        "diffRefs is null for MR with Iid "
+            + mergeRequest.getIid()
+            + " in projectId "
+            + mergeRequest.getProjectId());
     try {
+      projectId = project.getId();
+      baseSha = diffRefs.getBaseSha();
+      startSha = diffRefs.getStartSha();
+      headSha = diffRefs.getHeadSha();
+      final String patchString = file.getSpecifics().get(0);
+      final String oldPath = file.getSpecifics().get(1);
+      newPath = file.getSpecifics().get(2);
+      final Integer oldLine =
+          new PatchParser(patchString) //
+              .findOldLine(newLine) //
+              .orElse(null);
       final Date date = null;
       final String positionHash = null;
       final Position position = new Position();
