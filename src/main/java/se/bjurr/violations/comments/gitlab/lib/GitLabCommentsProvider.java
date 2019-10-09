@@ -35,7 +35,8 @@ public class GitLabCommentsProvider implements CommentsProvider {
   private final ViolationsLogger violationsLogger;
   private final GitLabApi gitLabApi;
   private final Project project;
-  private final MergeRequest mergeRequest;
+  private final MergeRequest mergeRequestChanges;
+  private MergeRequest mergeRequest;
 
   @SuppressFBWarnings({"NP_LOAD_OF_KNOWN_NULL_VALUE", "SIC_INNER_SHOULD_BE_STATIC_ANON"})
   public GitLabCommentsProvider(
@@ -73,8 +74,12 @@ public class GitLabCommentsProvider implements CommentsProvider {
 
     final Integer mergeRequestId = api.getMergeRequestIid();
     try {
-      mergeRequest =
+      mergeRequestChanges =
           gitLabApi.getMergeRequestApi().getMergeRequestChanges(project.getId(), mergeRequestId);
+      // This will populate diff_refs,
+      // https://docs.gitlab.com/ee/api/merge_requests.html#get-single-mr
+      mergeRequest =
+          gitLabApi.getMergeRequestApi().getMergeRequest(project.getId(), mergeRequestId);
     } catch (final Throwable e) {
       throw new RuntimeException("Could not get MR " + projectId + " " + mergeRequestId, e);
     }
@@ -101,7 +106,7 @@ public class GitLabCommentsProvider implements CommentsProvider {
     try {
       this.gitLabApi
           .getNotesApi()
-          .createMergeRequestNote(project.getId(), this.mergeRequest.getIid(), comment);
+          .createMergeRequestNote(project.getId(), this.mergeRequestChanges.getIid(), comment);
     } catch (final Throwable e) {
       violationsLogger.log(SEVERE, "Could create comment " + comment, e);
     }
@@ -116,14 +121,14 @@ public class GitLabCommentsProvider implements CommentsProvider {
       return;
     }
 
-    final String currentTitle = mergeRequest.getTitle();
+    final String currentTitle = mergeRequestChanges.getTitle();
     final String startTitle = "WIP: (VIOLATIONS) ";
     if (currentTitle.startsWith(startTitle)) {
       // To avoid setting WIP again on new comments
       return;
     }
     final Integer projectId = this.project.getId();
-    final Integer mergeRequestIid = this.mergeRequest.getIid();
+    final Integer mergeRequestIid = this.mergeRequestChanges.getIid();
     final String targetBranch = null;
     final Integer assigneeId = null;
     final String title = startTitle + currentTitle;
@@ -136,7 +141,7 @@ public class GitLabCommentsProvider implements CommentsProvider {
     final Boolean discussionLocked = null;
     final Boolean allowCollaboration = null;
     try {
-      mergeRequest.setTitle(title);
+      mergeRequestChanges.setTitle(title);
       gitLabApi
           .getMergeRequestApi()
           .updateMergeRequest(
@@ -201,7 +206,7 @@ public class GitLabCommentsProvider implements CommentsProvider {
       gitLabApi
           .getDiscussionsApi()
           .createMergeRequestDiscussion(
-              projectId, mergeRequest.getIid(), content, date, positionHash, position);
+              projectId, mergeRequestChanges.getIid(), content, date, positionHash, position);
     } catch (final Throwable e) {
       final String lineSeparator = System.lineSeparator();
       violationsLogger.log(
@@ -240,7 +245,9 @@ public class GitLabCommentsProvider implements CommentsProvider {
     try {
 
       final List<Note> notes =
-          gitLabApi.getNotesApi().getMergeRequestNotes(project.getId(), mergeRequest.getIid());
+          gitLabApi
+              .getNotesApi()
+              .getMergeRequestNotes(project.getId(), mergeRequestChanges.getIid());
 
       for (final Note note : notes) {
         final String identifier = note.getId() + "";
@@ -259,7 +266,7 @@ public class GitLabCommentsProvider implements CommentsProvider {
   @Override
   public List<ChangedFile> getFiles() {
     final List<ChangedFile> changedFiles = new ArrayList<>();
-    for (final Diff change : mergeRequest.getChanges()) {
+    for (final Diff change : mergeRequestChanges.getChanges()) {
       final String filename = change.getNewPath();
       final List<String> specifics = new ArrayList<>();
       final String patchString = change.getDiff();
@@ -280,7 +287,7 @@ public class GitLabCommentsProvider implements CommentsProvider {
         final int noteId = Integer.parseInt(comment.getIdentifier());
         this.gitLabApi
             .getNotesApi()
-            .deleteMergeRequestNote(project.getId(), mergeRequest.getIid(), noteId);
+            .deleteMergeRequestNote(project.getId(), mergeRequestChanges.getIid(), noteId);
       } catch (final Throwable e) {
         violationsLogger.log(SEVERE, "Could not delete note " + comment, e);
       }
