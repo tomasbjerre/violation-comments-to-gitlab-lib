@@ -3,6 +3,35 @@
 
 Changelog of Violation comments to gitlab lib.
 
+## 1.81
+### GitHub #23   
+
+**Correcting integration to get diff_refs**
+
+ * gitlab4j/gitlab4j-api 
+ * jenkinsci/violation-comments-to-gitlab-plugin 
+
+[655f185cebad7dd](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/655f185cebad7dd) Tomas Bjerre *2019-10-09 18:23:59*
+
+
+### GitHub #391   
+
+**Correcting integration to get diff_refs**
+
+ * gitlab4j/gitlab4j-api 
+ * jenkinsci/violation-comments-to-gitlab-plugin 
+
+[655f185cebad7dd](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/655f185cebad7dd) Tomas Bjerre *2019-10-09 18:23:59*
+
+
+### No issue
+
+**1.81-SNAPSHOT**
+
+
+[056ba95944b0667](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/056ba95944b0667) Tomas Bjerre *2019-10-09 18:52:17*
+
+
 ## 1.79
 ### No issue
 
