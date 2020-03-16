@@ -144,7 +144,7 @@ public class ViolationCommentsToGitLabApi {
     return this;
   }
 
-  private ViolationCommentsToGitLabApi() {}
+  ViolationCommentsToGitLabApi() {}
 
   public boolean getCommentOnlyChangedContent() {
     return commentOnlyChangedContent;

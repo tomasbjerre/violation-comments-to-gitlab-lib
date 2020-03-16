@@ -8,6 +8,7 @@ description = 'Library that adds violation comments from static code analysis to
 buildscript {
  repositories {
   maven { url "https://jitpack.io" }
+  mavenLocal()
  }
  dependencies {
   classpath 'com.github.tomasbjerre:gradle-scripts:master-SNAPSHOT'

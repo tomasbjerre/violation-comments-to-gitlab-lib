@@ -31,6 +31,7 @@ import se.bjurr.violations.comments.lib.model.Comment;
 
 public class GitLabCommentsProvider implements CommentsProvider {
   private static final String MASK = "HIDDEN";
+  static final String START_TITLE = "WIP: (VIOLATIONS)";
   private final ViolationCommentsToGitLabApi api;
   private final ViolationsLogger violationsLogger;
   private final GitLabApi gitLabApi;
@@ -122,8 +123,8 @@ public class GitLabCommentsProvider implements CommentsProvider {
     }
 
     final String currentTitle = mergeRequestChanges.getTitle();
-    final String startTitle = "WIP: (VIOLATIONS) ";
-    if (currentTitle.startsWith(startTitle)) {
+    Optional<String> titleOpt = getTitleWithWipPrefix(currentTitle);
+    if (!titleOpt.isPresent()) {
       // To avoid setting WIP again on new comments
       return;
     }
@@ -131,7 +132,7 @@ public class GitLabCommentsProvider implements CommentsProvider {
     final Integer mergeRequestIid = this.mergeRequestChanges.getIid();
     final String targetBranch = null;
     final Integer assigneeId = null;
-    final String title = startTitle + currentTitle;
+    String title = titleOpt.get();
     final String description = null;
     final Constants.StateEvent stateEvent = null;
     final String labels = null;
@@ -161,6 +162,20 @@ public class GitLabCommentsProvider implements CommentsProvider {
     } catch (final Throwable e) {
       violationsLogger.log(SEVERE, e.getMessage(), e);
     }
+  }
+
+  static Optional<String> getTitleWithWipPrefix(String currentTitle) {
+    if (currentTitle.startsWith(START_TITLE)) {
+      return Optional.empty();
+    }
+    if (currentTitle.startsWith("WIP:")) {
+      currentTitle = currentTitle.substring(4);
+    }
+    if (currentTitle.startsWith("WIP")) {
+      currentTitle = currentTitle.substring(3);
+    }
+    String title = START_TITLE + " " + currentTitle.trim();
+    return Optional.of(title.trim());
   }
 
   @Override
