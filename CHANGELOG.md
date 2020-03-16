@@ -3,13 +3,13 @@
 
 Changelog of Violation comments to gitlab lib.
 
-## Unreleased
+## 1.82
 ### GitHub [#4](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/issues/4) Proxy support    *enhancement*  
 
 **Avoid multiple WIP in title tomasbjerre/violation-comments-to-gitlab-command-line**
 
 
-[75e43b93bd7ef9a](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/75e43b93bd7ef9a) Tomas Bjerre *2020-03-16 17:14:02*
+[41d154bff313dbd](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/41d154bff313dbd) Tomas Bjerre *2020-03-16 17:16:44*
 
 
 ## 1.81
