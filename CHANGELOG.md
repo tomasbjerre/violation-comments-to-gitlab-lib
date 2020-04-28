@@ -3,6 +3,15 @@
 
 Changelog of Violation comments to gitlab lib.
 
+## 1.83
+### GitHub #26   
+
+**gitlab4j-api 4.12.3 -> 4.14.27 jenkinsci/violation-comments-to-gitlab-plugin**
+
+
+[4cc5800503269f2](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/4cc5800503269f2) Tomas Bjerre *2020-04-28 17:56:33*
+
+
 ## 1.82
 ### GitHub [#4](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/issues/4) Proxy support    *enhancement*  
 
