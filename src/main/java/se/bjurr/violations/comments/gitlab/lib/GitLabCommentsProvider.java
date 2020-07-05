@@ -25,9 +25,9 @@ import org.gitlab4j.api.models.Position;
 import org.gitlab4j.api.models.Project;
 import se.bjurr.violations.comments.lib.CommentsProvider;
 import se.bjurr.violations.comments.lib.PatchParser;
-import se.bjurr.violations.comments.lib.ViolationsLogger;
 import se.bjurr.violations.comments.lib.model.ChangedFile;
 import se.bjurr.violations.comments.lib.model.Comment;
+import se.bjurr.violations.lib.ViolationsLogger;
 
 public class GitLabCommentsProvider implements CommentsProvider {
   private static final String MASK = "HIDDEN";
@@ -45,12 +45,12 @@ public class GitLabCommentsProvider implements CommentsProvider {
     this.violationsLogger = violationsLogger;
     final String hostUrl = api.getHostUrl();
     final String apiToken = api.getApiToken();
-    final Map<String, Object> proxyConfig = getProxyConfig(api);
+    final Map<String, Object> proxyConfig = this.getProxyConfig(api);
     final TokenType tokenType = TokenType.valueOf(api.getTokenType().name());
     final String secretToken = null;
     this.gitLabApi = new GitLabApi(hostUrl, tokenType, apiToken, secretToken, proxyConfig);
-    gitLabApi.setIgnoreCertificateErrors(api.isIgnoreCertificateErrors());
-    gitLabApi.withRequestResponseLogging(
+    this.gitLabApi.setIgnoreCertificateErrors(api.isIgnoreCertificateErrors());
+    this.gitLabApi.withRequestResponseLogging(
         new Logger(GitLabCommentsProvider.class.getName(), null) {
           @Override
           public void log(final LogRecord record) {
@@ -68,19 +68,21 @@ public class GitLabCommentsProvider implements CommentsProvider {
 
     final String projectId = api.getProjectId();
     try {
-      this.project = gitLabApi.getProjectApi().getProject(projectId);
+      this.project = this.gitLabApi.getProjectApi().getProject(projectId);
     } catch (final GitLabApiException e) {
       throw new RuntimeException("Could not get project " + projectId, e);
     }
 
     final Integer mergeRequestId = api.getMergeRequestIid();
     try {
-      mergeRequestChanges =
-          gitLabApi.getMergeRequestApi().getMergeRequestChanges(project.getId(), mergeRequestId);
+      this.mergeRequestChanges =
+          this.gitLabApi
+              .getMergeRequestApi()
+              .getMergeRequestChanges(this.project.getId(), mergeRequestId);
       // This will populate diff_refs,
       // https://docs.gitlab.com/ee/api/merge_requests.html#get-single-mr
-      mergeRequest =
-          gitLabApi.getMergeRequestApi().getMergeRequest(project.getId(), mergeRequestId);
+      this.mergeRequest =
+          this.gitLabApi.getMergeRequestApi().getMergeRequest(this.project.getId(), mergeRequestId);
     } catch (final Throwable e) {
       throw new RuntimeException("Could not get MR " + projectId + " " + mergeRequestId, e);
     }
@@ -103,13 +105,13 @@ public class GitLabCommentsProvider implements CommentsProvider {
 
   @Override
   public void createComment(final String comment) {
-    markMergeRequestAsWIP();
+    this.markMergeRequestAsWIP();
     try {
       this.gitLabApi
           .getNotesApi()
-          .createMergeRequestNote(project.getId(), this.mergeRequestChanges.getIid(), comment);
+          .createMergeRequestNote(this.project.getId(), this.mergeRequestChanges.getIid(), comment);
     } catch (final Throwable e) {
-      violationsLogger.log(SEVERE, "Could create comment " + comment, e);
+      this.violationsLogger.log(SEVERE, "Could create comment " + comment, e);
     }
   }
 
@@ -122,8 +124,8 @@ public class GitLabCommentsProvider implements CommentsProvider {
       return;
     }
 
-    final String currentTitle = mergeRequestChanges.getTitle();
-    Optional<String> titleOpt = getTitleWithWipPrefix(currentTitle);
+    final String currentTitle = this.mergeRequestChanges.getTitle();
+    final Optional<String> titleOpt = getTitleWithWipPrefix(currentTitle);
     if (!titleOpt.isPresent()) {
       // To avoid setting WIP again on new comments
       return;
@@ -132,7 +134,7 @@ public class GitLabCommentsProvider implements CommentsProvider {
     final Integer mergeRequestIid = this.mergeRequestChanges.getIid();
     final String targetBranch = null;
     final Integer assigneeId = null;
-    String title = titleOpt.get();
+    final String title = titleOpt.get();
     final String description = null;
     final Constants.StateEvent stateEvent = null;
     final String labels = null;
@@ -142,8 +144,8 @@ public class GitLabCommentsProvider implements CommentsProvider {
     final Boolean discussionLocked = null;
     final Boolean allowCollaboration = null;
     try {
-      mergeRequestChanges.setTitle(title);
-      gitLabApi
+      this.mergeRequestChanges.setTitle(title);
+      this.gitLabApi
           .getMergeRequestApi()
           .updateMergeRequest(
               projectId,
@@ -160,7 +162,7 @@ public class GitLabCommentsProvider implements CommentsProvider {
               discussionLocked,
               allowCollaboration);
     } catch (final Throwable e) {
-      violationsLogger.log(SEVERE, e.getMessage(), e);
+      this.violationsLogger.log(SEVERE, e.getMessage(), e);
     }
   }
 
@@ -174,7 +176,7 @@ public class GitLabCommentsProvider implements CommentsProvider {
     if (currentTitle.startsWith("WIP")) {
       currentTitle = currentTitle.substring(3);
     }
-    String title = START_TITLE + " " + currentTitle.trim();
+    final String title = START_TITLE + " " + currentTitle.trim();
     return Optional.of(title.trim());
   }
 
@@ -182,21 +184,21 @@ public class GitLabCommentsProvider implements CommentsProvider {
   @SuppressFBWarnings("NP_LOAD_OF_KNOWN_NULL_VALUE")
   public void createSingleFileComment(
       final ChangedFile file, final Integer newLine, final String content) {
-    markMergeRequestAsWIP();
+    this.markMergeRequestAsWIP();
     Integer projectId = null;
     String baseSha = null;
     String startSha = null;
     String headSha = null;
     String newPath = null;
-    final DiffRef diffRefs = mergeRequest.getDiffRefs();
+    final DiffRef diffRefs = this.mergeRequest.getDiffRefs();
     Objects.requireNonNull(
         diffRefs,
         "diffRefs is null for MR with Iid "
-            + mergeRequest.getIid()
+            + this.mergeRequest.getIid()
             + " in projectId "
-            + mergeRequest.getProjectId());
+            + this.mergeRequest.getProjectId());
     try {
-      projectId = project.getId();
+      projectId = this.project.getId();
       baseSha = diffRefs.getBaseSha();
       startSha = diffRefs.getStartSha();
       headSha = diffRefs.getHeadSha();
@@ -218,13 +220,13 @@ public class GitLabCommentsProvider implements CommentsProvider {
       position.setNewPath(newPath);
       position.setOldLine(oldLine);
       position.setOldPath(oldPath);
-      gitLabApi
+      this.gitLabApi
           .getDiscussionsApi()
           .createMergeRequestDiscussion(
-              projectId, mergeRequestChanges.getIid(), content, date, positionHash, position);
+              projectId, this.mergeRequestChanges.getIid(), content, date, positionHash, position);
     } catch (final Throwable e) {
       final String lineSeparator = System.lineSeparator();
-      violationsLogger.log(
+      this.violationsLogger.log(
           SEVERE,
           "Could not create diff discussion!"
               + lineSeparator
@@ -260,9 +262,9 @@ public class GitLabCommentsProvider implements CommentsProvider {
     try {
 
       final List<Note> notes =
-          gitLabApi
+          this.gitLabApi
               .getNotesApi()
-              .getMergeRequestNotes(project.getId(), mergeRequestChanges.getIid());
+              .getMergeRequestNotes(this.project.getId(), this.mergeRequestChanges.getIid());
 
       for (final Note note : notes) {
         final String identifier = note.getId() + "";
@@ -273,7 +275,7 @@ public class GitLabCommentsProvider implements CommentsProvider {
         found.add(comment);
       }
     } catch (final Throwable e) {
-      violationsLogger.log(SEVERE, "Could not get comments", e);
+      this.violationsLogger.log(SEVERE, "Could not get comments", e);
     }
     return found;
   }
@@ -281,7 +283,7 @@ public class GitLabCommentsProvider implements CommentsProvider {
   @Override
   public List<ChangedFile> getFiles() {
     final List<ChangedFile> changedFiles = new ArrayList<>();
-    for (final Diff change : mergeRequestChanges.getChanges()) {
+    for (final Diff change : this.mergeRequestChanges.getChanges()) {
       final String filename = change.getNewPath();
       final List<String> specifics = new ArrayList<>();
       final String patchString = change.getDiff();
@@ -302,9 +304,10 @@ public class GitLabCommentsProvider implements CommentsProvider {
         final int noteId = Integer.parseInt(comment.getIdentifier());
         this.gitLabApi
             .getNotesApi()
-            .deleteMergeRequestNote(project.getId(), mergeRequestChanges.getIid(), noteId);
+            .deleteMergeRequestNote(
+                this.project.getId(), this.mergeRequestChanges.getIid(), noteId);
       } catch (final Throwable e) {
-        violationsLogger.log(SEVERE, "Could not delete note " + comment, e);
+        this.violationsLogger.log(SEVERE, "Could not delete note " + comment, e);
       }
     }
   }
@@ -312,7 +315,7 @@ public class GitLabCommentsProvider implements CommentsProvider {
   @Override
   public boolean shouldComment(final ChangedFile changedFile, final Integer line) {
     final String patchString = changedFile.getSpecifics().get(0);
-    if (!api.getCommentOnlyChangedContent()) {
+    if (!this.api.getCommentOnlyChangedContent()) {
       return true;
     }
     return new PatchParser(patchString) //
@@ -321,36 +324,36 @@ public class GitLabCommentsProvider implements CommentsProvider {
 
   @Override
   public boolean shouldCreateCommentWithAllSingleFileComments() {
-    return api.getCreateCommentWithAllSingleFileComments();
+    return this.api.getCreateCommentWithAllSingleFileComments();
   }
 
   @Override
   public boolean shouldCreateSingleFileComment() {
-    return api.getCreateSingleFileComments();
+    return this.api.getCreateSingleFileComments();
   }
 
   @Override
   public boolean shouldKeepOldComments() {
-    return api.getShouldKeepOldComments();
+    return this.api.getShouldKeepOldComments();
   }
 
   @Override
   public Optional<String> findCommentTemplate() {
-    return api.findCommentTemplate();
+    return this.api.findCommentTemplate();
   }
 
   @Override
   public Integer getMaxNumberOfViolations() {
-    return api.getMaxNumberOfViolations();
+    return this.api.getMaxNumberOfViolations();
   }
 
   @Override
   public Integer getMaxCommentSize() {
-    return api.getMaxCommentSize();
+    return this.api.getMaxCommentSize();
   }
 
   @Override
   public boolean shouldCommentOnlyChangedFiles() {
-    return api.getShouldCommentOnlyChangedFiles();
+    return this.api.getShouldCommentOnlyChangedFiles();
   }
 }

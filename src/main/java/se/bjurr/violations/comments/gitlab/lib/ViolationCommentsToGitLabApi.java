@@ -5,14 +5,14 @@ import static se.bjurr.violations.comments.lib.CommentsCreator.createComments;
 
 import com.github.mustachejava.resolver.DefaultResolver;
 import java.io.Reader;
-import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.gitlab4j.api.Constants.TokenType;
 import se.bjurr.violations.comments.lib.CommentsProvider;
-import se.bjurr.violations.comments.lib.ViolationsLogger;
+import se.bjurr.violations.lib.ViolationsLogger;
 import se.bjurr.violations.lib.model.Violation;
 import se.bjurr.violations.lib.util.Utils;
 
@@ -36,7 +36,7 @@ public class ViolationCommentsToGitLabApi {
     return new ViolationCommentsToGitLabApi();
   }
 
-  private List<Violation> violations;
+  private Set<Violation> violations;
   private boolean createCommentWithAllSingleFileComments = false;
   private boolean createSingleFileComments = false;
   private boolean commentOnlyChangedContent = false;
@@ -62,35 +62,35 @@ public class ViolationCommentsToGitLabApi {
     return this;
   }
 
-  public List<Violation> getViolations() {
-    return violations;
+  public Set<Violation> getViolations() {
+    return this.violations;
   }
 
-  public ViolationCommentsToGitLabApi setViolations(final List<Violation> violations) {
+  public ViolationCommentsToGitLabApi setViolations(final Set<Violation> violations) {
     this.violations = violations;
     return this;
   }
 
   public String getHostUrl() {
-    return hostUrl;
+    return this.hostUrl;
   }
 
   public ViolationCommentsToGitLabApi setHostUrl(final String hostUrl) {
-    this.hostUrl = emptyToNull(hostUrl);
+    this.hostUrl = this.emptyToNull(hostUrl);
     return this;
   }
 
   public String getApiToken() {
-    return apiToken;
+    return this.apiToken;
   }
 
   public ViolationCommentsToGitLabApi setApiToken(final String apiToken) {
-    this.apiToken = emptyToNull(apiToken);
+    this.apiToken = this.emptyToNull(apiToken);
     return this;
   }
 
   public TokenType getTokenType() {
-    return tokenType;
+    return this.tokenType;
   }
 
   public ViolationCommentsToGitLabApi setTokenType(final TokenType tokenType) {
@@ -99,7 +99,7 @@ public class ViolationCommentsToGitLabApi {
   }
 
   public boolean isIgnoreCertificateErrors() {
-    return ignoreCertificateErrors;
+    return this.ignoreCertificateErrors;
   }
 
   public ViolationCommentsToGitLabApi setIgnoreCertificateErrors(
@@ -109,16 +109,16 @@ public class ViolationCommentsToGitLabApi {
   }
 
   public String getProjectId() {
-    return projectId;
+    return this.projectId;
   }
 
   public ViolationCommentsToGitLabApi setProjectId(final String projectId) {
-    this.projectId = emptyToNull(projectId);
+    this.projectId = this.emptyToNull(projectId);
     return this;
   }
 
   public Integer getMergeRequestIid() {
-    return mergeRequestIid;
+    return this.mergeRequestIid;
   }
 
   public ViolationCommentsToGitLabApi setMergeRequestIid(final Integer mergeRequestIid) {
@@ -147,15 +147,15 @@ public class ViolationCommentsToGitLabApi {
   ViolationCommentsToGitLabApi() {}
 
   public boolean getCommentOnlyChangedContent() {
-    return commentOnlyChangedContent;
+    return this.commentOnlyChangedContent;
   }
 
   public boolean getShouldCommentOnlyChangedFiles() {
-    return shouldCommentOnlyChangedFiles;
+    return this.shouldCommentOnlyChangedFiles;
   }
 
   public boolean getCreateCommentWithAllSingleFileComments() {
-    return createCommentWithAllSingleFileComments;
+    return this.createCommentWithAllSingleFileComments;
   }
 
   /**
@@ -165,15 +165,16 @@ public class ViolationCommentsToGitLabApi {
    *     otherwise.
    */
   public boolean getCreateSingleFileComments() {
-    return createSingleFileComments;
+    return this.createSingleFileComments;
   }
 
   public void toPullRequest() throws Exception {
-    if (Utils.isNullOrEmpty(commentTemplate)) {
-      commentTemplate = getDefaultTemplate();
+    if (Utils.isNullOrEmpty(this.commentTemplate)) {
+      this.commentTemplate = this.getDefaultTemplate();
     }
-    final CommentsProvider commentsProvider = new GitLabCommentsProvider(violationsLogger, this);
-    createComments(violationsLogger, violations, commentsProvider);
+    final CommentsProvider commentsProvider =
+        new GitLabCommentsProvider(this.violationsLogger, this);
+    createComments(this.violationsLogger, this.violations, commentsProvider);
   }
 
   private String getDefaultTemplate() {
@@ -203,7 +204,7 @@ public class ViolationCommentsToGitLabApi {
   }
 
   public boolean getShouldKeepOldComments() {
-    return shouldKeepOldComments;
+    return this.shouldKeepOldComments;
   }
 
   public ViolationCommentsToGitLabApi setShouldSetWIP(final boolean shouldSetWIP) {
@@ -212,7 +213,7 @@ public class ViolationCommentsToGitLabApi {
   }
 
   public boolean getShouldSetWIP() {
-    return shouldSetWIP;
+    return this.shouldSetWIP;
   }
 
   public ViolationCommentsToGitLabApi setCommentTemplate(final String commentTemplate) {
@@ -221,34 +222,34 @@ public class ViolationCommentsToGitLabApi {
   }
 
   public Optional<String> findCommentTemplate() {
-    return ofNullable(commentTemplate);
+    return ofNullable(this.commentTemplate);
   }
 
   public ViolationCommentsToGitLabApi setProxyUser(final String proxyUser) {
-    this.proxyUser = emptyToNull(proxyUser);
+    this.proxyUser = this.emptyToNull(proxyUser);
     return this;
   }
 
   public ViolationCommentsToGitLabApi setProxyPassword(final String proxyPassword) {
-    this.proxyPassword = emptyToNull(proxyPassword);
+    this.proxyPassword = this.emptyToNull(proxyPassword);
     return this;
   }
 
   public ViolationCommentsToGitLabApi setProxyServer(final String proxyServer) {
-    this.proxyServer = emptyToNull(proxyServer);
+    this.proxyServer = this.emptyToNull(proxyServer);
     return this;
   }
 
   public Optional<String> findProxyServer() {
-    return Optional.ofNullable(proxyServer);
+    return Optional.ofNullable(this.proxyServer);
   }
 
   public Optional<String> findProxyPassword() {
-    return Optional.ofNullable(proxyPassword);
+    return Optional.ofNullable(this.proxyPassword);
   }
 
   public Optional<String> findProxyUser() {
-    return Optional.ofNullable(proxyUser);
+    return Optional.ofNullable(this.proxyUser);
   }
 
   private String emptyToNull(final String str) {
@@ -272,10 +273,10 @@ public class ViolationCommentsToGitLabApi {
   }
 
   public Integer getMaxNumberOfViolations() {
-    return maxNumberOfViolations;
+    return this.maxNumberOfViolations;
   }
 
   public Integer getMaxCommentSize() {
-    return maxCommentSize;
+    return this.maxCommentSize;
   }
 }
