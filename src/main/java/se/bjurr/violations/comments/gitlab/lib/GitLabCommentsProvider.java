@@ -24,10 +24,10 @@ import org.gitlab4j.api.models.Note;
 import org.gitlab4j.api.models.Position;
 import org.gitlab4j.api.models.Project;
 import se.bjurr.violations.comments.lib.CommentsProvider;
-import se.bjurr.violations.comments.lib.PatchParser;
 import se.bjurr.violations.comments.lib.model.ChangedFile;
 import se.bjurr.violations.comments.lib.model.Comment;
 import se.bjurr.violations.lib.ViolationsLogger;
+import se.bjurr.violations.lib.util.PatchParserUtil;
 
 public class GitLabCommentsProvider implements CommentsProvider {
   private static final String MASK = "HIDDEN";
@@ -37,7 +37,7 @@ public class GitLabCommentsProvider implements CommentsProvider {
   private final GitLabApi gitLabApi;
   private final Project project;
   private final MergeRequest mergeRequestChanges;
-  private MergeRequest mergeRequest;
+  private final MergeRequest mergeRequest;
 
   @SuppressFBWarnings({"NP_LOAD_OF_KNOWN_NULL_VALUE", "SIC_INNER_SHOULD_BE_STATIC_ANON"})
   public GitLabCommentsProvider(
@@ -206,7 +206,7 @@ public class GitLabCommentsProvider implements CommentsProvider {
       final String oldPath = file.getSpecifics().get(1);
       newPath = file.getSpecifics().get(2);
       final Integer oldLine =
-          new PatchParser(patchString) //
+          new PatchParserUtil(patchString) //
               .findOldLine(newLine) //
               .orElse(null);
       final Date date = null;
@@ -318,7 +318,7 @@ public class GitLabCommentsProvider implements CommentsProvider {
     if (!this.api.getCommentOnlyChangedContent()) {
       return true;
     }
-    return new PatchParser(patchString) //
+    return new PatchParserUtil(patchString) //
         .isLineInDiff(line);
   }
 

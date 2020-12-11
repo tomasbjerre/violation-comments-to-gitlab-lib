@@ -20,7 +20,7 @@ apply from: project.buildscript.classLoader.getResource('release.gradle').toURI(
 
 
 dependencies {
- compile 'se.bjurr.violations:violation-comments-lib:1.102'
+ compile 'se.bjurr.violations:violation-comments-lib:1.104'
  compile 'org.gitlab4j:gitlab4j-api:4.14.27'
 
  compileOnly 'com.github.spotbugs:spotbugs-annotations:3.1.12'
