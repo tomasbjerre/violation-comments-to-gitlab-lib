@@ -3,7 +3,15 @@
 
 Changelog of Violation comments to gitlab lib.
 
-## Unreleased
+## 1.85
+### GitHub #117   
+
+**Correctings in patchparsing tomasbjerre/violations-lib**
+
+
+[d1f0ff9d12a653e](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/d1f0ff9d12a653e) Tomas Bjerre *2020-12-14 15:05:42*
+
+
 ### No issue
 
 **update violation-comments-lib to 1.104**
