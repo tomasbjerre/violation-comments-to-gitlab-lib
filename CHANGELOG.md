@@ -3,6 +3,15 @@
 
 Changelog of Violation comments to gitlab lib.
 
+## Unreleased
+### No issue
+
+**update violation-comments-lib to 1.104**
+
+
+[7129ce7db5b8220](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/7129ce7db5b8220) Nov1kov *2020-12-11 12:09:44*
+
+
 ## 1.84
 ### No issue
 
