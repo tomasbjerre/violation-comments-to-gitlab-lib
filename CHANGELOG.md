@@ -3,6 +3,15 @@
 
 Changelog of violation-comments-to-gitlab-lib.
 
+## 1.86.2
+### No issue
+
+**new build script**
+
+
+[ba87900e3dec4f6](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/ba87900e3dec4f6) Tomas Bjerre *2021-04-04 15:05:45*
+
+
 ## 1.86.1
 ### No issue
 
