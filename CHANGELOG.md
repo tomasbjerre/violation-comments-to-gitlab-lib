@@ -1,7 +1,16 @@
 
- # Violation comments to gitlab lib changelog
+# violation-comments-to-gitlab-lib changelog
 
-Changelog of Violation comments to gitlab lib.
+Changelog of violation-comments-to-gitlab-lib.
+
+## 1.86.1
+### No issue
+
+**new build script**
+
+
+[6073dd3801a570c](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/6073dd3801a570c) Tomas Bjerre *2021-04-04 14:40:37*
+
 
 ## 1.85
 ### GitHub #117   
@@ -52,8 +61,8 @@ Changelog of Violation comments to gitlab lib.
 
 **Correcting integration to get diff_refs**
 
- * gitlab4j/gitlab4j-api 
- * jenkinsci/violation-comments-to-gitlab-plugin 
+* gitlab4j/gitlab4j-api 
+* jenkinsci/violation-comments-to-gitlab-plugin 
 
 [655f185cebad7dd](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/655f185cebad7dd) Tomas Bjerre *2019-10-09 18:23:59*
 
@@ -62,8 +71,8 @@ Changelog of Violation comments to gitlab lib.
 
 **Correcting integration to get diff_refs**
 
- * gitlab4j/gitlab4j-api 
- * jenkinsci/violation-comments-to-gitlab-plugin 
+* gitlab4j/gitlab4j-api 
+* jenkinsci/violation-comments-to-gitlab-plugin 
 
 [655f185cebad7dd](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/655f185cebad7dd) Tomas Bjerre *2019-10-09 18:23:59*
 
@@ -250,7 +259,7 @@ Changelog of Violation comments to gitlab lib.
 
 **Switching to Gitlab4j-api**
 
- * Waiting for https://github.com/gmessner/gitlab4j-api/issues/291 
+* Waiting for https://github.com/gmessner/gitlab4j-api/issues/291 
 
 [002744cca66203b](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/002744cca66203b) Tomas Bjerre *2019-02-19 18:15:00*
 
@@ -561,7 +570,7 @@ Changelog of Violation comments to gitlab lib.
 
 **Changing mergeRequestId to mergeRequestIid**
 
- * Because it is named wrong in the Java GitLab API Lib! 
+* Because it is named wrong in the Java GitLab API Lib! 
 
 [8d6ee2f37252769](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/8d6ee2f37252769) Tomas Bjerre *2018-04-22 15:55:04*
 
@@ -750,9 +759,9 @@ Changelog of Violation comments to gitlab lib.
 
 **Keeping comments and adjusting checkstyle**
 
- * Checkstyle now allows empty source attribute. 
- * Comments can optionaly be kept and not removed when new comments are added. 
- * Will no longer re-create identical comments. 
+* Checkstyle now allows empty source attribute. 
+* Comments can optionaly be kept and not removed when new comments are added. 
+* Will no longer re-create identical comments. 
 
 [afc79c6c0a0b480](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/afc79c6c0a0b480) Tomas Bjerre *2017-09-02 09:13:30*
 
@@ -843,4 +852,3 @@ Changelog of Violation comments to gitlab lib.
 [55b33dce223392b](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/55b33dce223392b) Tomas Bjerre *2017-02-20 18:38:45*
 
 
- 
