@@ -12,6 +12,7 @@ import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
+import java.util.stream.IntStream;
 import org.gitlab4j.api.Constants;
 import org.gitlab4j.api.Constants.TokenType;
 import org.gitlab4j.api.GitLabApi;
@@ -365,8 +366,12 @@ public class GitLabCommentsProvider implements CommentsProvider {
     if (patchString.isEmpty() && Boolean.parseBoolean(changedFile.getSpecifics().get(3))) {
       return true;
     }
-    return new PatchParserUtil(patchString) //
-        .isLineInDiff(line);
+    int contextLines = this.api.getCommentOnlyChangedContentContext();
+    PatchParserUtil patch = new PatchParserUtil(patchString);
+    return IntStream.rangeClosed(-contextLines, contextLines)
+        .filter(i -> patch.isLineInDiff(line + i) && !patch.findOldLine(line + i).isPresent())
+        .findAny()
+        .isPresent();
   }
 
   @Override

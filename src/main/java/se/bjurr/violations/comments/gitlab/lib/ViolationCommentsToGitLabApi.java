@@ -4,6 +4,7 @@ import static java.util.Optional.ofNullable;
 import static se.bjurr.violations.comments.lib.CommentsCreator.createComments;
 
 import com.github.mustachejava.resolver.DefaultResolver;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.io.Reader;
 import java.util.Optional;
 import java.util.Scanner;
@@ -17,6 +18,7 @@ import se.bjurr.violations.lib.model.Violation;
 import se.bjurr.violations.lib.util.Utils;
 
 public class ViolationCommentsToGitLabApi {
+  @SuppressFBWarnings({"CRLF_INJECTION_LOGS"})
   private static class ViolationsLoggerJavaLogger implements ViolationsLogger {
     @Override
     public void log(final Level level, final String string) {
@@ -40,6 +42,7 @@ public class ViolationCommentsToGitLabApi {
   private boolean createCommentWithAllSingleFileComments = false;
   private boolean createSingleFileComments = false;
   private boolean commentOnlyChangedContent = false;
+  private int commentOnlyChangedContentContext;
   private String hostUrl;
   private String apiToken;
   private TokenType tokenType;
@@ -144,10 +147,20 @@ public class ViolationCommentsToGitLabApi {
     return this;
   }
 
+  public ViolationCommentsToGitLabApi setCommentOnlyChangedContentContext(
+      final int commentOnlyChangedContentContext) {
+    this.commentOnlyChangedContentContext = commentOnlyChangedContentContext;
+    return this;
+  }
+
   ViolationCommentsToGitLabApi() {}
 
   public boolean getCommentOnlyChangedContent() {
     return this.commentOnlyChangedContent;
+  }
+
+  public int getCommentOnlyChangedContentContext() {
+    return this.commentOnlyChangedContentContext;
   }
 
   public boolean getShouldCommentOnlyChangedFiles() {
