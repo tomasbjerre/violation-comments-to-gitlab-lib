@@ -39,18 +39,46 @@ public class GitLabCommentsProvider implements CommentsProvider {
   private final MergeRequest mergeRequestChanges;
   private final MergeRequest mergeRequest;
 
-  @SuppressFBWarnings({"NP_LOAD_OF_KNOWN_NULL_VALUE", "SIC_INNER_SHOULD_BE_STATIC_ANON"})
-  public GitLabCommentsProvider(
-      final ViolationsLogger violationsLogger, final ViolationCommentsToGitLabApi api) {
+  public GitLabCommentsProvider(final ViolationsLogger violationsLogger,
+                                final ViolationCommentsToGitLabApi api) {
+    this(violationsLogger, api, initGitLabApi(violationsLogger, api));
+  }
+
+  protected GitLabCommentsProvider(ViolationsLogger violationsLogger,
+                                   ViolationCommentsToGitLabApi api,
+                                   GitLabApi gitLabApi,
+                                   Project project,
+                                   MergeRequest mergeRequestChanges,
+                                   MergeRequest mergeRequest) {
+    this.api = api;
     this.violationsLogger = violationsLogger;
+    this.gitLabApi = gitLabApi;
+    this.project = project;
+    this.mergeRequestChanges = mergeRequestChanges;
+    this.mergeRequest = mergeRequest;
+  }
+
+  private GitLabCommentsProvider(ViolationsLogger violationsLogger,
+                                 ViolationCommentsToGitLabApi api,
+                                 GitLabApi gitLabApi) {
+    this(violationsLogger,
+        api,
+        gitLabApi,
+        initProject(api, gitLabApi),
+        initMergeRequestChanges(api, gitLabApi),
+        initMergeRequest(api, gitLabApi));
+  }
+
+  @SuppressFBWarnings({"NP_LOAD_OF_KNOWN_NULL_VALUE", "SIC_INNER_SHOULD_BE_STATIC_ANON"})
+  private static GitLabApi initGitLabApi(ViolationsLogger violationsLogger, ViolationCommentsToGitLabApi api) {
     final String hostUrl = api.getHostUrl();
     final String apiToken = api.getApiToken();
-    final Map<String, Object> proxyConfig = this.getProxyConfig(api);
+    final Map<String, Object> proxyConfig = getProxyConfig(api);
     final TokenType tokenType = TokenType.valueOf(api.getTokenType().name());
     final String secretToken = null;
-    this.gitLabApi = new GitLabApi(hostUrl, tokenType, apiToken, secretToken, proxyConfig);
-    this.gitLabApi.setIgnoreCertificateErrors(api.isIgnoreCertificateErrors());
-    this.gitLabApi.withRequestResponseLogging(
+    GitLabApi gitLabApi = new GitLabApi(hostUrl, tokenType, apiToken, secretToken, proxyConfig);
+    gitLabApi.setIgnoreCertificateErrors(api.isIgnoreCertificateErrors());
+    gitLabApi.withRequestResponseLogging(
         new Logger(GitLabCommentsProvider.class.getName(), null) {
           @Override
           public void log(final LogRecord record) {
@@ -65,32 +93,45 @@ public class GitLabCommentsProvider implements CommentsProvider {
           }
         },
         Level.INFO);
+    return gitLabApi;
+  }
 
+  private static Project initProject(ViolationCommentsToGitLabApi api, GitLabApi gitLabApi) {
     final String projectId = api.getProjectId();
     try {
-      this.project = this.gitLabApi.getProjectApi().getProject(projectId);
+      return gitLabApi.getProjectApi().getProject(projectId);
     } catch (final GitLabApiException e) {
       throw new RuntimeException("Could not get project " + projectId, e);
     }
+  }
 
+  private static MergeRequest initMergeRequest(ViolationCommentsToGitLabApi api, GitLabApi gitLabApi) {
+    String projectId = api.getProjectId();
     final Integer mergeRequestId = api.getMergeRequestIid();
     try {
-      this.mergeRequestChanges =
-          this.gitLabApi
-              .getMergeRequestApi()
-              .getMergeRequestChanges(this.project.getId(), mergeRequestId);
       // This will populate diff_refs,
       // https://docs.gitlab.com/ee/api/merge_requests.html#get-single-mr
-      this.mergeRequest =
-          this.gitLabApi.getMergeRequestApi().getMergeRequest(this.project.getId(), mergeRequestId);
+      return gitLabApi
+          .getMergeRequestApi()
+          .getMergeRequest(projectId, mergeRequestId);
     } catch (final Throwable e) {
       throw new RuntimeException("Could not get MR " + projectId + " " + mergeRequestId, e);
     }
-
-    this.api = api;
   }
 
-  private Map<String, Object> getProxyConfig(final ViolationCommentsToGitLabApi api) {
+  private static MergeRequest initMergeRequestChanges(ViolationCommentsToGitLabApi api, GitLabApi gitLabApi) {
+    String projectId = api.getProjectId();
+    final Integer mergeRequestId = api.getMergeRequestIid();
+    try {
+      return gitLabApi
+          .getMergeRequestApi()
+          .getMergeRequestChanges(projectId, mergeRequestId);
+    } catch (final Throwable e) {
+      throw new RuntimeException("Could not get MR " + projectId + " " + mergeRequestId, e);
+    }
+  }
+
+  private static Map<String, Object> getProxyConfig(final ViolationCommentsToGitLabApi api) {
     if (api.findProxyServer().isPresent()) {
       if (!api.findProxyUser().isPresent() || !api.findProxyPassword().isPresent()) {
         return ProxyClientConfig.createProxyClientConfig(api.findProxyServer().get());
@@ -290,6 +331,9 @@ public class GitLabCommentsProvider implements CommentsProvider {
       specifics.add(patchString);
       specifics.add(change.getOldPath());
       specifics.add(change.getNewPath());
+      specifics.add(change.getNewFile().toString());
+      specifics.add(change.getRenamedFile().toString());
+      specifics.add(change.getDeletedFile().toString());
       final ChangedFile changedFile = new ChangedFile(filename, specifics);
       changedFiles.add(changedFile);
     }
@@ -316,6 +360,9 @@ public class GitLabCommentsProvider implements CommentsProvider {
   public boolean shouldComment(final ChangedFile changedFile, final Integer line) {
     final String patchString = changedFile.getSpecifics().get(0);
     if (!this.api.getCommentOnlyChangedContent()) {
+      return true;
+    }
+    if (patchString.isEmpty() && Boolean.parseBoolean(changedFile.getSpecifics().get(3))) {
       return true;
     }
     return new PatchParserUtil(patchString) //
