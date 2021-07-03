@@ -39,17 +39,18 @@ public class GitLabCommentsProvider implements CommentsProvider {
   private final MergeRequest mergeRequestChanges;
   private final MergeRequest mergeRequest;
 
-  public GitLabCommentsProvider(final ViolationsLogger violationsLogger,
-                                final ViolationCommentsToGitLabApi api) {
+  public GitLabCommentsProvider(
+      final ViolationsLogger violationsLogger, final ViolationCommentsToGitLabApi api) {
     this(violationsLogger, api, initGitLabApi(violationsLogger, api));
   }
 
-  protected GitLabCommentsProvider(ViolationsLogger violationsLogger,
-                                   ViolationCommentsToGitLabApi api,
-                                   GitLabApi gitLabApi,
-                                   Project project,
-                                   MergeRequest mergeRequestChanges,
-                                   MergeRequest mergeRequest) {
+  protected GitLabCommentsProvider(
+      ViolationsLogger violationsLogger,
+      ViolationCommentsToGitLabApi api,
+      GitLabApi gitLabApi,
+      Project project,
+      MergeRequest mergeRequestChanges,
+      MergeRequest mergeRequest) {
     this.api = api;
     this.violationsLogger = violationsLogger;
     this.gitLabApi = gitLabApi;
@@ -58,10 +59,10 @@ public class GitLabCommentsProvider implements CommentsProvider {
     this.mergeRequest = mergeRequest;
   }
 
-  private GitLabCommentsProvider(ViolationsLogger violationsLogger,
-                                 ViolationCommentsToGitLabApi api,
-                                 GitLabApi gitLabApi) {
-    this(violationsLogger,
+  private GitLabCommentsProvider(
+      ViolationsLogger violationsLogger, ViolationCommentsToGitLabApi api, GitLabApi gitLabApi) {
+    this(
+        violationsLogger,
         api,
         gitLabApi,
         initProject(api, gitLabApi),
@@ -70,7 +71,8 @@ public class GitLabCommentsProvider implements CommentsProvider {
   }
 
   @SuppressFBWarnings({"NP_LOAD_OF_KNOWN_NULL_VALUE", "SIC_INNER_SHOULD_BE_STATIC_ANON"})
-  private static GitLabApi initGitLabApi(ViolationsLogger violationsLogger, ViolationCommentsToGitLabApi api) {
+  private static GitLabApi initGitLabApi(
+      ViolationsLogger violationsLogger, ViolationCommentsToGitLabApi api) {
     final String hostUrl = api.getHostUrl();
     final String apiToken = api.getApiToken();
     final Map<String, Object> proxyConfig = getProxyConfig(api);
@@ -105,27 +107,25 @@ public class GitLabCommentsProvider implements CommentsProvider {
     }
   }
 
-  private static MergeRequest initMergeRequest(ViolationCommentsToGitLabApi api, GitLabApi gitLabApi) {
+  private static MergeRequest initMergeRequest(
+      ViolationCommentsToGitLabApi api, GitLabApi gitLabApi) {
     String projectId = api.getProjectId();
     final Integer mergeRequestId = api.getMergeRequestIid();
     try {
       // This will populate diff_refs,
       // https://docs.gitlab.com/ee/api/merge_requests.html#get-single-mr
-      return gitLabApi
-          .getMergeRequestApi()
-          .getMergeRequest(projectId, mergeRequestId);
+      return gitLabApi.getMergeRequestApi().getMergeRequest(projectId, mergeRequestId);
     } catch (final Throwable e) {
       throw new RuntimeException("Could not get MR " + projectId + " " + mergeRequestId, e);
     }
   }
 
-  private static MergeRequest initMergeRequestChanges(ViolationCommentsToGitLabApi api, GitLabApi gitLabApi) {
+  private static MergeRequest initMergeRequestChanges(
+      ViolationCommentsToGitLabApi api, GitLabApi gitLabApi) {
     String projectId = api.getProjectId();
     final Integer mergeRequestId = api.getMergeRequestIid();
     try {
-      return gitLabApi
-          .getMergeRequestApi()
-          .getMergeRequestChanges(projectId, mergeRequestId);
+      return gitLabApi.getMergeRequestApi().getMergeRequestChanges(projectId, mergeRequestId);
     } catch (final Throwable e) {
       throw new RuntimeException("Could not get MR " + projectId + " " + mergeRequestId, e);
     }

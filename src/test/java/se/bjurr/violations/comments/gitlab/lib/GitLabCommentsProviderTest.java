@@ -2,14 +2,13 @@ package se.bjurr.violations.comments.gitlab.lib;
 
 import static se.bjurr.violations.comments.gitlab.lib.GitLabCommentsProvider.START_TITLE;
 
+import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.stream.IntStream;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.Test;
 import se.bjurr.violations.comments.lib.model.ChangedFile;
 import se.bjurr.violations.lib.ViolationsLogger;
-
-import java.util.Arrays;
-import java.util.logging.Level;
-import java.util.stream.IntStream;
 
 public class GitLabCommentsProviderTest {
 
@@ -52,18 +51,22 @@ public class GitLabCommentsProviderTest {
                     + "+}\n",
                 "src/main/java/com/test/SomeClass.java",
                 "src/main/java/com/test/SomeClass.java"));
-    ViolationCommentsToGitLabApi api = new ViolationCommentsToGitLabApi()
-        .setCommentOnlyChangedContent(false);
+    ViolationCommentsToGitLabApi api =
+        new ViolationCommentsToGitLabApi().setCommentOnlyChangedContent(false);
     GitLabCommentsProvider gitlab = createGitLabCommentsProvider(api);
     SoftAssertions soft = new SoftAssertions();
-    IntStream.rangeClosed(1, 6).forEach(line ->
-        soft.assertThat(gitlab.shouldComment(changedFile, line))
-            .as(Integer.toString(line))
-            .isTrue());
-    IntStream.rangeClosed(7, 100).forEach(line ->
-        soft.assertThat(gitlab.shouldComment(changedFile, line))
-            .as(Integer.toString(line))
-            .isTrue());
+    IntStream.rangeClosed(1, 6)
+        .forEach(
+            line ->
+                soft.assertThat(gitlab.shouldComment(changedFile, line))
+                    .as(Integer.toString(line))
+                    .isTrue());
+    IntStream.rangeClosed(7, 100)
+        .forEach(
+            line ->
+                soft.assertThat(gitlab.shouldComment(changedFile, line))
+                    .as(Integer.toString(line))
+                    .isTrue());
     soft.assertAll();
   }
 
@@ -82,17 +85,22 @@ public class GitLabCommentsProviderTest {
                     + "+}\n",
                 "src/main/java/com/test/SomeClass.java",
                 "src/main/java/com/test/SomeClass.java"));
-    ViolationCommentsToGitLabApi api = new ViolationCommentsToGitLabApi().setCommentOnlyChangedContent(true);
+    ViolationCommentsToGitLabApi api =
+        new ViolationCommentsToGitLabApi().setCommentOnlyChangedContent(true);
     GitLabCommentsProvider gitLabCommentsProvider = createGitLabCommentsProvider(api);
     SoftAssertions soft = new SoftAssertions();
-    IntStream.rangeClosed(1, 6).forEach(line ->
-        soft.assertThat(gitLabCommentsProvider.shouldComment(changedFile, line))
-            .as(Integer.toString(line))
-            .isTrue());
-    IntStream.rangeClosed(7, 100).forEach(line ->
-        soft.assertThat(gitLabCommentsProvider.shouldComment(changedFile, line))
-            .as(Integer.toString(line))
-            .isFalse());
+    IntStream.rangeClosed(1, 6)
+        .forEach(
+            line ->
+                soft.assertThat(gitLabCommentsProvider.shouldComment(changedFile, line))
+                    .as(Integer.toString(line))
+                    .isTrue());
+    IntStream.rangeClosed(7, 100)
+        .forEach(
+            line ->
+                soft.assertThat(gitLabCommentsProvider.shouldComment(changedFile, line))
+                    .as(Integer.toString(line))
+                    .isFalse());
     soft.assertAll();
   }
 
@@ -112,10 +120,12 @@ public class GitLabCommentsProviderTest {
         new ViolationCommentsToGitLabApi().setCommentOnlyChangedContent(true);
     GitLabCommentsProvider gitLabCommentsProvider = createGitLabCommentsProvider(api);
     SoftAssertions soft = new SoftAssertions();
-    IntStream.rangeClosed(1, 10).forEach(line ->
-        soft.assertThat(gitLabCommentsProvider.shouldComment(changedFile, line))
-            .as(Integer.toString(line))
-            .isFalse());
+    IntStream.rangeClosed(1, 10)
+        .forEach(
+            line ->
+                soft.assertThat(gitLabCommentsProvider.shouldComment(changedFile, line))
+                    .as(Integer.toString(line))
+                    .isFalse());
     soft.assertAll();
   }
 
@@ -135,23 +145,25 @@ public class GitLabCommentsProviderTest {
         new ViolationCommentsToGitLabApi().setCommentOnlyChangedContent(true);
     GitLabCommentsProvider gitLabCommentsProvider = createGitLabCommentsProvider(api);
     SoftAssertions soft = new SoftAssertions();
-    IntStream.rangeClosed(1, 10).forEach(line ->
-        soft.assertThat(gitLabCommentsProvider.shouldComment(changedFile, line))
-            .as(Integer.toString(line))
-            .isTrue());
+    IntStream.rangeClosed(1, 10)
+        .forEach(
+            line ->
+                soft.assertThat(gitLabCommentsProvider.shouldComment(changedFile, line))
+                    .as(Integer.toString(line))
+                    .isTrue());
     soft.assertAll();
   }
 
-  private static GitLabCommentsProvider createGitLabCommentsProvider(ViolationCommentsToGitLabApi api) {
-    ViolationsLogger logger = new ViolationsLogger() {
-      @Override
-      public void log(Level level, String string) {
-      }
+  private static GitLabCommentsProvider createGitLabCommentsProvider(
+      ViolationCommentsToGitLabApi api) {
+    ViolationsLogger logger =
+        new ViolationsLogger() {
+          @Override
+          public void log(Level level, String string) {}
 
-      @Override
-      public void log(Level level, String string, Throwable t) {
-      }
-    };
+          @Override
+          public void log(Level level, String string, Throwable t) {}
+        };
     return new GitLabCommentsProvider(logger, api, null, null, null, null);
   }
 }
