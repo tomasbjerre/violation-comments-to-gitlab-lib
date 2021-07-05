@@ -5,6 +5,8 @@ import static se.bjurr.violations.comments.gitlab.lib.GitLabCommentsProvider.STA
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
+import org.assertj.core.api.BooleanAssert;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.Test;
 import se.bjurr.violations.comments.lib.model.ChangedFile;
@@ -38,7 +40,7 @@ public class GitLabCommentsProviderTest {
 
   @Test
   public void shouldCommentAllLines() {
-    ChangedFile changedFile =
+    ChangedFile change =
         new ChangedFile(
             "src/main/java/com/test/SomeClass.java",
             Arrays.asList(
@@ -53,26 +55,14 @@ public class GitLabCommentsProviderTest {
                 "src/main/java/com/test/SomeClass.java"));
     ViolationCommentsToGitLabApi api =
         new ViolationCommentsToGitLabApi().setCommentOnlyChangedContent(false);
-    GitLabCommentsProvider gitlab = createGitLabCommentsProvider(api);
-    SoftAssertions soft = new SoftAssertions();
-    IntStream.rangeClosed(1, 6)
-        .forEach(
-            line ->
-                soft.assertThat(gitlab.shouldComment(changedFile, line))
-                    .as(Integer.toString(line))
-                    .isTrue());
-    IntStream.rangeClosed(7, 100)
-        .forEach(
-            line ->
-                soft.assertThat(gitlab.shouldComment(changedFile, line))
-                    .as(Integer.toString(line))
-                    .isTrue());
-    soft.assertAll();
+    CommentsChecker checker = new CommentsChecker(api, change);
+    checker.shouldComment(1, 100).forEach(BooleanAssert::isTrue);
+    checker.assertAll();
   }
 
   @Test
   public void shouldCommentOnlyChangedLines() {
-    ChangedFile changedFile =
+    ChangedFile change =
         new ChangedFile(
             "src/main/java/com/test/SomeClass.java",
             Arrays.asList(
@@ -87,26 +77,15 @@ public class GitLabCommentsProviderTest {
                 "src/main/java/com/test/SomeClass.java"));
     ViolationCommentsToGitLabApi api =
         new ViolationCommentsToGitLabApi().setCommentOnlyChangedContent(true);
-    GitLabCommentsProvider gitLabCommentsProvider = createGitLabCommentsProvider(api);
-    SoftAssertions soft = new SoftAssertions();
-    IntStream.rangeClosed(1, 6)
-        .forEach(
-            line ->
-                soft.assertThat(gitLabCommentsProvider.shouldComment(changedFile, line))
-                    .as(Integer.toString(line))
-                    .isTrue());
-    IntStream.rangeClosed(7, 100)
-        .forEach(
-            line ->
-                soft.assertThat(gitLabCommentsProvider.shouldComment(changedFile, line))
-                    .as(Integer.toString(line))
-                    .isFalse());
-    soft.assertAll();
+    CommentsChecker checker = new CommentsChecker(api, change);
+    checker.shouldComment(1, 6).forEach(BooleanAssert::isTrue);
+    checker.shouldComment(7, 100).forEach(BooleanAssert::isFalse);
+    checker.assertAll();
   }
 
   @Test
   public void shouldNotCommentLargeChanges() {
-    ChangedFile changedFile =
+    ChangedFile change =
         new ChangedFile(
             "src/main/java/com/test/SomeClass.java",
             Arrays.asList(
@@ -118,20 +97,14 @@ public class GitLabCommentsProviderTest {
                 "false"));
     ViolationCommentsToGitLabApi api =
         new ViolationCommentsToGitLabApi().setCommentOnlyChangedContent(true);
-    GitLabCommentsProvider gitLabCommentsProvider = createGitLabCommentsProvider(api);
-    SoftAssertions soft = new SoftAssertions();
-    IntStream.rangeClosed(1, 10)
-        .forEach(
-            line ->
-                soft.assertThat(gitLabCommentsProvider.shouldComment(changedFile, line))
-                    .as(Integer.toString(line))
-                    .isFalse());
-    soft.assertAll();
+    CommentsChecker checker = new CommentsChecker(api, change);
+    checker.shouldComment(1, 10).forEach(BooleanAssert::isFalse);
+    checker.assertAll();
   }
 
   @Test
   public void shouldCommentLargeChangesIfNewFile() {
-    ChangedFile changedFile =
+    ChangedFile change =
         new ChangedFile(
             "src/main/java/com/test/SomeClass.java",
             Arrays.asList(
@@ -143,27 +116,144 @@ public class GitLabCommentsProviderTest {
                 "false"));
     ViolationCommentsToGitLabApi api =
         new ViolationCommentsToGitLabApi().setCommentOnlyChangedContent(true);
-    GitLabCommentsProvider gitLabCommentsProvider = createGitLabCommentsProvider(api);
-    SoftAssertions soft = new SoftAssertions();
-    IntStream.rangeClosed(1, 10)
-        .forEach(
-            line ->
-                soft.assertThat(gitLabCommentsProvider.shouldComment(changedFile, line))
-                    .as(Integer.toString(line))
-                    .isTrue());
-    soft.assertAll();
+    CommentsChecker checker = new CommentsChecker(api, change);
+    checker.shouldComment(1, 10).forEach(BooleanAssert::isTrue);
+    checker.assertAll();
   }
 
-  private static GitLabCommentsProvider createGitLabCommentsProvider(
-      ViolationCommentsToGitLabApi api) {
-    ViolationsLogger logger =
-        new ViolationsLogger() {
-          @Override
-          public void log(Level level, String string) {}
+  @Test
+  public void shouldNotCommentContextLines() {
+    ChangedFile change =
+        new ChangedFile(
+            "src/main/java/com/test/SomeClass.java",
+            Arrays.asList(
+                "@@ -9,6 +9,9 @@\n"
+                    + "     public void someMethod2() {\n"
+                    + "     }\n"
+                    + " \n"
+                    + "+    public void someMethod2_1() {\n"
+                    + "+    }\n"
+                    + "+\n"
+                    + "     public void someMethod3() {\n"
+                    + "     }\n"
+                    + " }",
+                "src/main/java/com/test/SomeClass.java",
+                "src/main/java/com/test/SomeClass.java"));
+    ViolationCommentsToGitLabApi api =
+        new ViolationCommentsToGitLabApi()
+            .setCommentOnlyChangedContent(true)
+            .setCommentOnlyChangedContentContext(0);
+    CommentsChecker checker = new CommentsChecker(api, change);
+    checker.shouldComment(1, 11).forEach(BooleanAssert::isFalse);
+    checker.shouldComment(12, 14).forEach(BooleanAssert::isTrue);
+    checker.shouldComment(15, 20).forEach(BooleanAssert::isFalse);
+    checker.assertAll();
+  }
 
-          @Override
-          public void log(Level level, String string, Throwable t) {}
-        };
-    return new GitLabCommentsProvider(logger, api, null, null, null, null);
+  @Test
+  public void shouldCommentGivenContextLines() {
+    ChangedFile change =
+        new ChangedFile(
+            "src/main/java/com/test/SomeClass.java",
+            Arrays.asList(
+                "@@ -9,6 +9,9 @@\n"
+                    + "     public void someMethod2() {\n"
+                    + "     }\n"
+                    + " \n"
+                    + "+    public void someMethod2_1() {\n"
+                    + "+    }\n"
+                    + "+\n"
+                    + "     public void someMethod3() {\n"
+                    + "     }\n"
+                    + " }",
+                "src/main/java/com/test/SomeClass.java",
+                "src/main/java/com/test/SomeClass.java"));
+    ViolationCommentsToGitLabApi api =
+        new ViolationCommentsToGitLabApi()
+            .setCommentOnlyChangedContent(true)
+            .setCommentOnlyChangedContentContext(2);
+    CommentsChecker checker = new CommentsChecker(api, change);
+    checker.shouldComment(1, 9).forEach(BooleanAssert::isFalse);
+    checker.shouldComment(10, 16).forEach(BooleanAssert::isTrue);
+    checker.shouldComment(17, 20).forEach(BooleanAssert::isFalse);
+    checker.assertAll();
+  }
+
+  @Test
+  public void shouldCommentGivenContextLinesAcrossHunks() {
+    ChangedFile change =
+        new ChangedFile(
+            "src/main/java/com/test/SomeClass.java",
+            Arrays.asList(
+                "@@ -9,6 +9,9 @@\n"
+                    + "   public void someMethod2() {\n"
+                    + "   }\n"
+                    + " \n"
+                    + "+  public void someMethod2_1() {\n"
+                    + "+  }\n"
+                    + "+\n"
+                    + "   public void someMethod3() {\n"
+                    + "   }\n"
+                    + " \n"
+                    + "@@ -18,6 +21,6 @@\n"
+                    + "   public void someMethod5() {\n"
+                    + "   }\n"
+                    + " \n"
+                    + "-  public void someMethod6() {\n"
+                    + "+  public void someMethod7() {\n"
+                    + "   }\n"
+                    + " }",
+                "src/main/java/com/test/SomeClass.java",
+                "src/main/java/com/test/SomeClass.java"));
+    ViolationCommentsToGitLabApi api =
+        new ViolationCommentsToGitLabApi()
+            .setCommentOnlyChangedContent(true)
+            .setCommentOnlyChangedContentContext(2);
+    CommentsChecker checker = new CommentsChecker(api, change);
+    checker.shouldComment(1, 9).forEach(BooleanAssert::isFalse);
+    checker.shouldComment(10, 16).forEach(BooleanAssert::isTrue);
+    checker.shouldComment(17, 21).forEach(BooleanAssert::isFalse);
+    checker.shouldComment(22, 26).forEach(BooleanAssert::isTrue);
+    checker.shouldComment(27, 30).forEach(BooleanAssert::isFalse);
+    checker.assertAll();
+  }
+
+  private static class CommentsChecker {
+
+    private final GitLabCommentsProvider provider;
+
+    private final ChangedFile file;
+
+    private final SoftAssertions soft = new SoftAssertions();
+
+    private CommentsChecker(ViolationCommentsToGitLabApi api, ChangedFile file) {
+      this.provider =
+          new GitLabCommentsProvider(
+              new ViolationsLogger() {
+                @Override
+                public void log(Level level, String string) {}
+
+                @Override
+                public void log(Level level, String string, Throwable t) {}
+              },
+              api,
+              null,
+              null,
+              null,
+              null);
+      this.file = file;
+    }
+
+    public BooleanAssert shouldComment(int line) {
+      return soft.assertThat(provider.shouldComment(file, line)).as(Integer.toString(line));
+    }
+
+    public Stream<BooleanAssert> shouldComment(int from, int to) {
+      return IntStream.rangeClosed(from, to).mapToObj(this::shouldComment);
+    }
+
+    public void assertAll() {
+      soft.assertAll();
+    }
   }
 }
