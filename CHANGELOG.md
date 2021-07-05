@@ -2,6 +2,21 @@
 
 Changelog of violation-comments-to-gitlab-lib.
 
+## [1.86.4](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/releases/tag/1.86.4) (2021-07-05)
+
+
+
+
+
+
+
+### Other changes
+
+**Added parameter for the number of context lines to comment on**
+
+
+[1aa3b](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/1aa3b5408fad51b) Aurelian Teglas *2021-07-04 08:52:36*
+
 ## [1.86.3](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/releases/tag/1.86.3) (2021-07-03)
 
 
