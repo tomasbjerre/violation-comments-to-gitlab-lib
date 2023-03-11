@@ -1,5 +1,4 @@
 # Violation Comments to GitLab Lib
-[![Build Status](https://travis-ci.org/tomasbjerre/violation-comments-to-gitlab-lib.svg?branch=master)](https://travis-ci.org/tomasbjerre/violation-comments-to-gitlab-lib)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/se.bjurr.violations/violation-comments-to-gitlab-lib/badge.svg)](https://maven-badges.herokuapp.com/maven-central/se.bjurr.violations/violation-comments-to-gitlab-lib)
 
 This is a library that adds violation comments from static code analysis to GitLab.
