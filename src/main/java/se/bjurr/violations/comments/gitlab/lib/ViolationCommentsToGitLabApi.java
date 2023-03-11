@@ -3,14 +3,16 @@ package se.bjurr.violations.comments.gitlab.lib;
 import static java.util.Optional.ofNullable;
 import static se.bjurr.violations.comments.lib.CommentsCreator.createComments;
 
-import com.github.mustachejava.resolver.DefaultResolver;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import java.io.Reader;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
-import java.util.Scanner;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import org.gitlab4j.api.Constants.TokenType;
 import se.bjurr.violations.comments.lib.CommentsProvider;
 import se.bjurr.violations.lib.ViolationsLogger;
@@ -32,7 +34,7 @@ public class ViolationCommentsToGitLabApi {
   }
 
   private static final String DEFAULT_VIOLATION_TEMPLATE_MUSTACH =
-      "default-violation-template-gitlab.mustach";
+      "/default-violation-template-gitlab.mustach";
 
   public static ViolationCommentsToGitLabApi violationCommentsToGitLabApi() {
     return new ViolationCommentsToGitLabApi();
@@ -191,14 +193,15 @@ public class ViolationCommentsToGitLabApi {
   }
 
   private String getDefaultTemplate() {
-    try {
-      final Reader reader =
-          new DefaultResolver() //
-              .getReader(DEFAULT_VIOLATION_TEMPLATE_MUSTACH);
-      try (Scanner scanner = new Scanner(reader)) {
-        scanner.useDelimiter("\\A");
-        return scanner.hasNext() ? scanner.next() : "";
+    try (InputStream inputStream =
+        ViolationCommentsToGitLabApi.class.getResourceAsStream(
+            DEFAULT_VIOLATION_TEMPLATE_MUSTACH)) {
+      if (inputStream == null) {
+        throw new RuntimeException("Did not find " + DEFAULT_VIOLATION_TEMPLATE_MUSTACH);
       }
+      return new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))
+          .lines()
+          .collect(Collectors.joining("\n"));
     } catch (final Throwable t) {
       throw new RuntimeException(t.getMessage(), t);
     }
