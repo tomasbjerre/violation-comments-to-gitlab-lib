@@ -20,6 +20,32 @@ import se.bjurr.violations.lib.model.Violation;
 import se.bjurr.violations.lib.util.Utils;
 
 public class ViolationCommentsToGitLabApi {
+
+  private Set<Violation> violations;
+  private boolean createCommentWithAllSingleFileComments;
+  private boolean createSingleFileComments;
+  private boolean commentOnlyChangedContent;
+  private int commentOnlyChangedContentContext;
+  private String hostUrl;
+  private String apiToken;
+  private TokenType tokenType;
+  private boolean ignoreCertificateErrors;
+  private String projectId;
+  private Long mergeRequestIid;
+  private boolean shouldKeepOldComments;
+  private boolean shouldSetWIP;
+  private String commentTemplate;
+  private ViolationsLogger violationsLogger = new ViolationsLoggerJavaLogger();
+  private String proxyServer;
+  private String proxyUser;
+  private String proxyPassword;
+  private Integer maxNumberOfViolations;
+  private Integer maxCommentSize;
+  private boolean shouldCommentOnlyChangedFiles = true;
+
+  private static final String DEFAULT_VIOLATION_TEMPLATE_MUSTACH =
+      "/default-violation-template-gitlab.mustach";
+
   @SuppressFBWarnings({"CRLF_INJECTION_LOGS"})
   private static class ViolationsLoggerJavaLogger implements ViolationsLogger {
     @Override
@@ -33,34 +59,9 @@ public class ViolationCommentsToGitLabApi {
     }
   }
 
-  private static final String DEFAULT_VIOLATION_TEMPLATE_MUSTACH =
-      "/default-violation-template-gitlab.mustach";
-
   public static ViolationCommentsToGitLabApi violationCommentsToGitLabApi() {
     return new ViolationCommentsToGitLabApi();
   }
-
-  private Set<Violation> violations;
-  private boolean createCommentWithAllSingleFileComments = false;
-  private boolean createSingleFileComments = false;
-  private boolean commentOnlyChangedContent = false;
-  private int commentOnlyChangedContentContext;
-  private String hostUrl;
-  private String apiToken;
-  private TokenType tokenType;
-  private boolean ignoreCertificateErrors;
-  private String projectId;
-  private Integer mergeRequestIid;
-  private boolean shouldKeepOldComments;
-  private boolean shouldSetWIP;
-  private String commentTemplate;
-  private ViolationsLogger violationsLogger = new ViolationsLoggerJavaLogger();
-  private String proxyServer;
-  private String proxyUser;
-  private String proxyPassword;
-  private Integer maxNumberOfViolations;
-  private Integer maxCommentSize;
-  private boolean shouldCommentOnlyChangedFiles = true;
 
   public ViolationCommentsToGitLabApi setViolationsLogger(final ViolationsLogger violationsLogger) {
     this.violationsLogger = violationsLogger;
@@ -122,11 +123,11 @@ public class ViolationCommentsToGitLabApi {
     return this;
   }
 
-  public Integer getMergeRequestIid() {
+  public Long getMergeRequestIid() {
     return this.mergeRequestIid;
   }
 
-  public ViolationCommentsToGitLabApi setMergeRequestIid(final Integer mergeRequestIid) {
+  public ViolationCommentsToGitLabApi setMergeRequestIid(final Long mergeRequestIid) {
     this.mergeRequestIid = mergeRequestIid;
     return this;
   }
@@ -193,15 +194,15 @@ public class ViolationCommentsToGitLabApi {
   }
 
   private String getDefaultTemplate() {
-    try (InputStream inputStream =
+    try (final InputStream inputStream =
         ViolationCommentsToGitLabApi.class.getResourceAsStream(
             DEFAULT_VIOLATION_TEMPLATE_MUSTACH)) {
       if (inputStream == null) {
         throw new RuntimeException("Did not find " + DEFAULT_VIOLATION_TEMPLATE_MUSTACH);
       }
-      return new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))
-          .lines()
-          .collect(Collectors.joining("\n"));
+      try (InputStreamReader is = new InputStreamReader(inputStream, StandardCharsets.UTF_8)) {
+        return new BufferedReader(is).lines().collect(Collectors.joining("\n"));
+      }
     } catch (final Throwable t) {
       throw new RuntimeException(t.getMessage(), t);
     }

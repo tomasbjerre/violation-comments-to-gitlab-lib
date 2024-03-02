@@ -46,12 +46,12 @@ public class GitLabCommentsProvider implements CommentsProvider {
   }
 
   protected GitLabCommentsProvider(
-      ViolationsLogger violationsLogger,
-      ViolationCommentsToGitLabApi api,
-      GitLabApi gitLabApi,
-      Project project,
-      MergeRequest mergeRequestChanges,
-      MergeRequest mergeRequest) {
+      final ViolationsLogger violationsLogger,
+      final ViolationCommentsToGitLabApi api,
+      final GitLabApi gitLabApi,
+      final Project project,
+      final MergeRequest mergeRequestChanges,
+      final MergeRequest mergeRequest) {
     this.api = api;
     this.violationsLogger = violationsLogger;
     this.gitLabApi = gitLabApi;
@@ -61,7 +61,9 @@ public class GitLabCommentsProvider implements CommentsProvider {
   }
 
   private GitLabCommentsProvider(
-      ViolationsLogger violationsLogger, ViolationCommentsToGitLabApi api, GitLabApi gitLabApi) {
+      final ViolationsLogger violationsLogger,
+      final ViolationCommentsToGitLabApi api,
+      final GitLabApi gitLabApi) {
     this(
         violationsLogger,
         api,
@@ -73,13 +75,14 @@ public class GitLabCommentsProvider implements CommentsProvider {
 
   @SuppressFBWarnings({"NP_LOAD_OF_KNOWN_NULL_VALUE", "SIC_INNER_SHOULD_BE_STATIC_ANON"})
   private static GitLabApi initGitLabApi(
-      ViolationsLogger violationsLogger, ViolationCommentsToGitLabApi api) {
+      final ViolationsLogger violationsLogger, final ViolationCommentsToGitLabApi api) {
     final String hostUrl = api.getHostUrl();
     final String apiToken = api.getApiToken();
     final Map<String, Object> proxyConfig = getProxyConfig(api);
     final TokenType tokenType = TokenType.valueOf(api.getTokenType().name());
     final String secretToken = null;
-    GitLabApi gitLabApi = new GitLabApi(hostUrl, tokenType, apiToken, secretToken, proxyConfig);
+    final GitLabApi gitLabApi =
+        new GitLabApi(hostUrl, tokenType, apiToken, secretToken, proxyConfig);
     gitLabApi.setIgnoreCertificateErrors(api.isIgnoreCertificateErrors());
     gitLabApi.withRequestResponseLogging(
         new Logger(GitLabCommentsProvider.class.getName(), null) {
@@ -99,7 +102,8 @@ public class GitLabCommentsProvider implements CommentsProvider {
     return gitLabApi;
   }
 
-  private static Project initProject(ViolationCommentsToGitLabApi api, GitLabApi gitLabApi) {
+  private static Project initProject(
+      final ViolationCommentsToGitLabApi api, final GitLabApi gitLabApi) {
     final String projectId = api.getProjectId();
     try {
       return gitLabApi.getProjectApi().getProject(projectId);
@@ -109,9 +113,9 @@ public class GitLabCommentsProvider implements CommentsProvider {
   }
 
   private static MergeRequest initMergeRequest(
-      ViolationCommentsToGitLabApi api, GitLabApi gitLabApi) {
-    String projectId = api.getProjectId();
-    final Integer mergeRequestId = api.getMergeRequestIid();
+      final ViolationCommentsToGitLabApi api, final GitLabApi gitLabApi) {
+    final String projectId = api.getProjectId();
+    final Long mergeRequestId = api.getMergeRequestIid();
     try {
       // This will populate diff_refs,
       // https://docs.gitlab.com/ee/api/merge_requests.html#get-single-mr
@@ -122,9 +126,9 @@ public class GitLabCommentsProvider implements CommentsProvider {
   }
 
   private static MergeRequest initMergeRequestChanges(
-      ViolationCommentsToGitLabApi api, GitLabApi gitLabApi) {
-    String projectId = api.getProjectId();
-    final Integer mergeRequestId = api.getMergeRequestIid();
+      final ViolationCommentsToGitLabApi api, final GitLabApi gitLabApi) {
+    final String projectId = api.getProjectId();
+    final Long mergeRequestId = api.getMergeRequestIid();
     try {
       return gitLabApi.getMergeRequestApi().getMergeRequestChanges(projectId, mergeRequestId);
     } catch (final Throwable e) {
@@ -172,15 +176,15 @@ public class GitLabCommentsProvider implements CommentsProvider {
       // To avoid setting WIP again on new comments
       return;
     }
-    final Integer projectId = this.project.getId();
-    final Integer mergeRequestIid = this.mergeRequestChanges.getIid();
+    final Long projectId = this.project.getId();
+    final Long mergeRequestIid = this.mergeRequestChanges.getIid();
     final String targetBranch = null;
-    final Integer assigneeId = null;
+    final Long assigneeId = null;
     final String title = titleOpt.get();
     final String description = null;
     final Constants.StateEvent stateEvent = null;
     final String labels = null;
-    final Integer milestoneId = null;
+    final Long milestoneId = null;
     final Boolean removeSourceBranch = null;
     final Boolean squash = null;
     final Boolean discussionLocked = null;
@@ -227,7 +231,7 @@ public class GitLabCommentsProvider implements CommentsProvider {
   public void createSingleFileComment(
       final ChangedFile file, final Integer newLine, final String content) {
     this.markMergeRequestAsWIP();
-    Integer projectId = null;
+    Long projectId = null;
     String baseSha = null;
     String startSha = null;
     String headSha = null;
@@ -346,7 +350,7 @@ public class GitLabCommentsProvider implements CommentsProvider {
   public void removeComments(final List<Comment> comments) {
     for (final Comment comment : comments) {
       try {
-        final int noteId = Integer.parseInt(comment.getIdentifier());
+        final Long noteId = Long.parseLong(comment.getIdentifier());
         this.gitLabApi
             .getNotesApi()
             .deleteMergeRequestNote(
@@ -359,15 +363,15 @@ public class GitLabCommentsProvider implements CommentsProvider {
 
   @Override
   public boolean shouldComment(final ChangedFile changedFile, final Integer line) {
-    final String patchString = changedFile.getSpecifics().get(0);
     if (!this.api.getCommentOnlyChangedContent()) {
       return true;
     }
+    final String patchString = changedFile.getSpecifics().get(0);
     if (patchString.isEmpty() && Boolean.parseBoolean(changedFile.getSpecifics().get(3))) {
       return true;
     }
-    int contextLines = this.api.getCommentOnlyChangedContentContext();
-    PatchParserUtil patch = new PatchParserUtil(patchString);
+    final int contextLines = this.api.getCommentOnlyChangedContentContext();
+    final PatchParserUtil patch = new PatchParserUtil(patchString);
     return IntStream.rangeClosed(-contextLines, contextLines)
         .filter(i -> patch.isLineInDiff(line + i) && !patch.findOldLine(line + i).isPresent())
         .findAny()
