@@ -2,6 +2,12 @@
 
 Changelog of violation-comments-to-gitlab-lib.
 
+## 1.88.0 (2024-03-02)
+
+### Features
+
+-  gitlab4j-api:5.5.0 ([7d3ef](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/7d3ef94ca6fda39) Tomas Bjerre)  
+
 ## 1.87.0 (2023-03-11)
 
 ### Features
