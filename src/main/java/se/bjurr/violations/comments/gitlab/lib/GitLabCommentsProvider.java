@@ -232,10 +232,6 @@ public class GitLabCommentsProvider implements CommentsProvider {
       final ChangedFile file, final Integer newLine, final String content) {
     this.markMergeRequestAsWIP();
     Long projectId = null;
-    String baseSha = null;
-    String startSha = null;
-    String headSha = null;
-    String newPath = null;
     final DiffRef diffRefs = this.mergeRequest.getDiffRefs();
     Objects.requireNonNull(
         diffRefs,
@@ -243,21 +239,22 @@ public class GitLabCommentsProvider implements CommentsProvider {
             + this.mergeRequest.getIid()
             + " in projectId "
             + this.mergeRequest.getProjectId());
+    Position position = null;
     try {
       projectId = this.project.getId();
-      baseSha = diffRefs.getBaseSha();
-      startSha = diffRefs.getStartSha();
-      headSha = diffRefs.getHeadSha();
+      final String baseSha = diffRefs.getBaseSha();
+      final String startSha = diffRefs.getStartSha();
+      final String headSha = diffRefs.getHeadSha();
       final String patchString = file.getSpecifics().get(0);
       final String oldPath = file.getSpecifics().get(1);
-      newPath = file.getSpecifics().get(2);
+      final String newPath = file.getSpecifics().get(2);
       final Integer oldLine =
           new PatchParserUtil(patchString) //
               .findOldLine(newLine) //
               .orElse(null);
       final Date date = null;
       final String positionHash = null;
-      final Position position = new Position();
+      position = new Position();
       position.setPositionType(Position.PositionType.TEXT);
       position.setBaseSha(baseSha);
       position.setStartSha(startSha);
@@ -279,25 +276,11 @@ public class GitLabCommentsProvider implements CommentsProvider {
               + "ProjectID: "
               + projectId
               + lineSeparator
-              + "SourceSha: "
-              + baseSha
-              + lineSeparator
-              + "HeadSha: "
-              + headSha
-              + lineSeparator
-              + "TargetSha: "
-              + startSha
-              + lineSeparator
-              + "Path "
-              + newPath
-              + lineSeparator
               + "Violation: "
               + content
               + lineSeparator
-              + "NewLine "
-              + newLine
-              + ", OldLine"
-              + newLine,
+              + ", position "
+              + position,
           e);
     }
   }
