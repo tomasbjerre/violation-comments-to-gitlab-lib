@@ -2,6 +2,12 @@
 
 Changelog of violation-comments-to-gitlab-lib.
 
+## 1.89.0 (2024-03-04)
+
+### Features
+
+-  changing logging when comment fails ([e75dd](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/e75dda20adf9d34) Tomas Bjerre)  
+
 ## 1.88.0 (2024-03-02)
 
 ### Features
