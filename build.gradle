@@ -1,21 +1,13 @@
-apply plugin: 'java-library'
-
-buildscript {
- repositories {
-  mavenCentral()
-  mavenLocal()
- }
- dependencies {
-  classpath 'se.bjurr.gradle:gradle-scripts:2.+'
- }
+plugins {
+	id "se.bjurr.gradle.conventional-release"
+	id "se.bjurr.gradle.java-convention"
+	id "se.bjurr.gradle.update-versions"
 }
-apply from: project.buildscript.classLoader.getResource('main.gradle').toURI()
-
 
 dependencies {
- api 'se.bjurr.violations:violation-comments-lib:1.107.1'
- api 'org.gitlab4j:gitlab4j-api:5.5.0'
+	api 'se.bjurr.violations:violation-comments-lib:1.109.0'
+	api 'org.gitlab4j:gitlab4j-api:5.6.0'
 
- testImplementation 'junit:junit:4.13.2'
- testImplementation 'org.assertj:assertj-core:3.25.3'
+	testImplementation 'junit:junit:4.13.2'
+	testImplementation 'org.assertj:assertj-core:3.26.3'
 }

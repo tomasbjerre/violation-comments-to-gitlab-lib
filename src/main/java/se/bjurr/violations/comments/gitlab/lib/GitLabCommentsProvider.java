@@ -5,6 +5,7 @@ import static java.util.logging.Level.SEVERE;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -146,7 +147,7 @@ public class GitLabCommentsProvider implements CommentsProvider {
             api.findProxyServer().get(), api.findProxyUser().get(), api.findProxyPassword().get());
       }
     }
-    return null;
+    return new HashMap<String, Object>();
   }
 
   @Override
@@ -296,7 +297,7 @@ public class GitLabCommentsProvider implements CommentsProvider {
               .getMergeRequestNotes(this.project.getId(), this.mergeRequestChanges.getIid());
 
       for (final Note note : notes) {
-        final String identifier = note.getId() + "";
+        final String identifier = note.getId().toString();
         final String content = note.getBody();
         final String type = "PR";
         final List<String> specifics = new ArrayList<>();

@@ -1,6 +1,3 @@
-# violation-comments-to-gitlab-lib changelog
-
-Changelog of violation-comments-to-gitlab-lib.
 
 ## 1.89.0 (2024-03-04)
 

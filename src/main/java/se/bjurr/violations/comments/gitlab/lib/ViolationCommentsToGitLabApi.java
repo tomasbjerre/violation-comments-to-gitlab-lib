@@ -201,7 +201,9 @@ public class ViolationCommentsToGitLabApi {
         throw new RuntimeException("Did not find " + DEFAULT_VIOLATION_TEMPLATE_MUSTACH);
       }
       try (InputStreamReader is = new InputStreamReader(inputStream, StandardCharsets.UTF_8)) {
-        return new BufferedReader(is).lines().collect(Collectors.joining("\n"));
+        try (BufferedReader br = new BufferedReader(is)) {
+          return br.lines().collect(Collectors.joining("\n"));
+        }
       }
     } catch (final Throwable t) {
       throw new RuntimeException(t.getMessage(), t);
