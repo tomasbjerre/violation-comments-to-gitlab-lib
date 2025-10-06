@@ -1,7 +1,9 @@
 plugins {
-	id "se.bjurr.gradle.conventional-release"
-	id "se.bjurr.gradle.java-convention"
-	id "se.bjurr.gradle.update-versions"
+	id "se.bjurr.gradle.bundle-jar" version "1.+"
+}
+
+javaExtension {
+	javaVersion = 17
 }
 
 dependencies {
