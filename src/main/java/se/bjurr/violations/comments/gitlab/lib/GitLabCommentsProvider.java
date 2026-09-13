@@ -15,7 +15,6 @@ import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 import java.util.stream.IntStream;
 import org.gitlab4j.api.Constants;
-import org.gitlab4j.api.Constants.TokenType;
 import org.gitlab4j.api.GitLabApi;
 import org.gitlab4j.api.GitLabApiException;
 import org.gitlab4j.api.ProxyClientConfig;
@@ -25,6 +24,7 @@ import org.gitlab4j.api.models.MergeRequest;
 import org.gitlab4j.api.models.Note;
 import org.gitlab4j.api.models.Position;
 import org.gitlab4j.api.models.Project;
+import org.gitlab4j.models.Constants.TokenType;
 import se.bjurr.violations.comments.lib.CommentsProvider;
 import se.bjurr.violations.comments.lib.model.ChangedFile;
 import se.bjurr.violations.comments.lib.model.Comment;
@@ -156,7 +156,8 @@ public class GitLabCommentsProvider implements CommentsProvider {
     try {
       this.gitLabApi
           .getNotesApi()
-          .createMergeRequestNote(this.project.getId(), this.mergeRequestChanges.getIid(), comment);
+          .createMergeRequestNote(
+              this.project.getId(), this.mergeRequestChanges.getIid(), comment, null, false);
     } catch (final Throwable e) {
       this.violationsLogger.log(SEVERE, "Could create comment " + comment, e);
     }

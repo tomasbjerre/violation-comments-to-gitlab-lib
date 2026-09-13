@@ -13,7 +13,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-import org.gitlab4j.api.Constants.TokenType;
+import org.gitlab4j.models.Constants.TokenType;
 import se.bjurr.violations.comments.lib.CommentsProvider;
 import se.bjurr.violations.lib.ViolationsLogger;
 import se.bjurr.violations.lib.model.Violation;
