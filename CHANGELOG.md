@@ -1,3 +1,22 @@
+## 1.90.2 (2026-09-13)
+
+### Dependency updates
+
+- update dependencies ([18dab](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/18dabfc9feb6246) Tomas Bjerre)  
+- update dependencies and gradle-conventions to 2.1.2 ([b1aa3](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/b1aa37e0e4fed0a) Tomas Bjerre)  
+- gradle 9 ([b8e29](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/b8e29370732187a) Tomas Bjerre)  
+### Other changes
+
+**Fix broken Maven Central badge in README**
+
+* maven-badges.herokuapp.com is down; switch to img.shields.io badge 
+* linking to search.maven.org. 
+* Co-Authored-By: Claude Sonnet 5 &lt;noreply@anthropic.com&gt; 
+* Claude-Session: https://claude.ai/code/session_011PGVf85V1VhJj4oM3rKh7b 
+
+[98f5b](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/98f5b8c559badb5) Tomas Bjerre *2026-09-13 08:52:01*
+
+
 ## 1.90.1 (2024-10-05)
 
 
