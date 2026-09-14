@@ -1,3 +1,20 @@
+## 1.91.0 (2026-09-14)
+
+### Features
+
+-  **ci**  add draft/publish release workflow ([8ae9b](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/8ae9bc0fbed3af0) Tomas Bjerre)  
+
+### Dependency updates
+
+- update gradle wrapper to 9.7.1 ([e69d4](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/e69d46de6e45cef) Tomas Bjerre)  
+### Other changes
+
+**Auto-publish pending draft releases weekly**
+
+
+[6f620](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/6f620d57159c5b1) Tomas Bjerre *2026-09-14 19:47:45*
+
+
 ## Unreleased ()
 
 ## 1.90.2 (2026-09-13)
