@@ -1,5 +1,5 @@
 # Violation Comments to GitLab Lib
-[![Maven Central](https://img.shields.io/maven-central/v/se.bjurr.violations/violation-comments-to-gitlab-lib.svg?label=Maven%20Central)](https://search.maven.org/artifact/se.bjurr.violations/violation-comments-to-gitlab-lib)
+[![Maven Central](https://img.shields.io/maven-central/v/se.bjurr.violations/violation-comments-to-gitlab-lib.svg?label=Maven%20Central)](https://central.sonatype.com/artifact/se.bjurr.violations/violation-comments-to-gitlab-lib)
 
 This is a library that adds violation comments from static code analysis to GitLab.
 
