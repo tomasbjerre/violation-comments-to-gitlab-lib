@@ -8,7 +8,7 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import org.assertj.core.api.BooleanAssert;
 import org.assertj.core.api.SoftAssertions;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import se.bjurr.violations.comments.lib.model.ChangedFile;
 import se.bjurr.violations.lib.ViolationsLogger;
 
