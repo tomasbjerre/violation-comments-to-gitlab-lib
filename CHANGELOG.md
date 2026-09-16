@@ -1,3 +1,23 @@
+## 1.91.1 (2026-09-16)
+
+### Bug Fixes
+
+-  make GitLab request/response logging opt-in ([361bd](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/361bd29f30f4ec9) Tomas Bjerre)  
+
+### Other changes
+
+**Merge pull request #21 from tomasbjerre/feature/opt-in-request-response-logging**
+
+* fix: make GitLab request/response logging opt-in 
+
+[f5542](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/f554295a383358c) Tomas Bjerre *2026-09-16 19:12:13*
+
+**Superseded by centralized publish-draft-releases.yaml in .github**
+
+
+[1d2ee](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/1d2eed0083e04c0) Tomas Bjerre *2026-09-14 19:58:48*
+
+
 ## 1.91.0 (2026-09-14)
 
 ### Features
