@@ -42,6 +42,7 @@ public class ViolationCommentsToGitLabApi {
   private Integer maxNumberOfViolations;
   private Integer maxCommentSize;
   private boolean shouldCommentOnlyChangedFiles = true;
+  private boolean logRequestResponse;
 
   private static final String DEFAULT_VIOLATION_TEMPLATE_MUSTACH =
       "/default-violation-template-gitlab.mustach";
@@ -297,5 +298,19 @@ public class ViolationCommentsToGitLabApi {
 
   public Integer getMaxCommentSize() {
     return this.maxCommentSize;
+  }
+
+  /**
+   * When enabled, every GitLab API request and response (headers included) is logged via {@link
+   * #setViolationsLogger(ViolationsLogger)}. Off by default: this is meant for diagnosing issues,
+   * not everyday use.
+   */
+  public ViolationCommentsToGitLabApi setLogRequestResponse(final boolean logRequestResponse) {
+    this.logRequestResponse = logRequestResponse;
+    return this;
+  }
+
+  public boolean isLogRequestResponse() {
+    return this.logRequestResponse;
   }
 }

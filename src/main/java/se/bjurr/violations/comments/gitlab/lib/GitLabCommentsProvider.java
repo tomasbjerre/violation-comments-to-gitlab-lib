@@ -85,21 +85,23 @@ public class GitLabCommentsProvider implements CommentsProvider {
     final GitLabApi gitLabApi =
         new GitLabApi(hostUrl, tokenType, apiToken, secretToken, proxyConfig);
     gitLabApi.setIgnoreCertificateErrors(api.isIgnoreCertificateErrors());
-    gitLabApi.withRequestResponseLogging(
-        new Logger(GitLabCommentsProvider.class.getName(), null) {
-          @Override
-          public void log(final LogRecord record) {
-            String masked =
-                record
-                    .getMessage() //
-                    .replace(apiToken, MASK);
-            if (api.findProxyPassword().isPresent()) {
-              masked = masked.replace(api.findProxyPassword().get(), MASK);
+    if (api.isLogRequestResponse()) {
+      gitLabApi.withRequestResponseLogging(
+          new Logger(GitLabCommentsProvider.class.getName(), null) {
+            @Override
+            public void log(final LogRecord record) {
+              String masked =
+                  record
+                      .getMessage() //
+                      .replace(apiToken, MASK);
+              if (api.findProxyPassword().isPresent()) {
+                masked = masked.replace(api.findProxyPassword().get(), MASK);
+              }
+              violationsLogger.log(record.getLevel(), masked);
             }
-            violationsLogger.log(record.getLevel(), masked);
-          }
-        },
-        Level.INFO);
+          },
+          Level.INFO);
+    }
     return gitLabApi;
   }
 
