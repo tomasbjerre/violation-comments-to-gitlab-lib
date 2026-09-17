@@ -20,6 +20,7 @@ import org.gitlab4j.api.GitLabApiException;
 import org.gitlab4j.api.ProxyClientConfig;
 import org.gitlab4j.api.models.Diff;
 import org.gitlab4j.api.models.DiffRef;
+import org.gitlab4j.api.models.Discussion;
 import org.gitlab4j.api.models.MergeRequest;
 import org.gitlab4j.api.models.Note;
 import org.gitlab4j.api.models.Position;
@@ -289,23 +290,40 @@ public class GitLabCommentsProvider implements CommentsProvider {
     }
   }
 
+  /** Index in {@link Comment#getSpecifics()} of the discussion the comment/note belongs to. */
+  static final int SPECIFIC_DISCUSSION_ID = 0;
+
+  /**
+   * Index in {@link Comment#getSpecifics()} of whether that discussion is a resolvable one (a
+   * diff/single-file discussion), as opposed to a plain top-level merge request note, which GitLab
+   * doesn't allow resolving.
+   */
+  static final int SPECIFIC_RESOLVABLE = 1;
+
   @Override
   public List<Comment> getComments() {
     final List<Comment> found = new ArrayList<>();
     try {
-
-      final List<Note> notes =
+      // Fetched via discussions, rather than the flat notes list, because resolving a comment
+      // (see removeComments()) needs the id of the discussion it belongs to - which only the
+      // Discussions API exposes.
+      final List<Discussion> discussions =
           this.gitLabApi
-              .getNotesApi()
-              .getMergeRequestNotes(this.project.getId(), this.mergeRequestChanges.getIid());
+              .getDiscussionsApi()
+              .getMergeRequestDiscussions(this.project.getId(), this.mergeRequestChanges.getIid());
 
-      for (final Note note : notes) {
-        final String identifier = note.getId().toString();
-        final String content = note.getBody();
-        final String type = "PR";
-        final List<String> specifics = new ArrayList<>();
-        final Comment comment = new Comment(identifier, content, type, specifics);
-        found.add(comment);
+      for (final Discussion discussion : discussions) {
+        for (final Note note : discussion.getNotes()) {
+          final String identifier = note.getId().toString();
+          final String content = note.getBody();
+          final String type = "PR";
+          final List<String> specifics = new ArrayList<>();
+          specifics.add(SPECIFIC_DISCUSSION_ID, discussion.getId());
+          specifics.add(
+              SPECIFIC_RESOLVABLE, String.valueOf(Boolean.TRUE.equals(note.getResolvable())));
+          final Comment comment = new Comment(identifier, content, type, specifics);
+          found.add(comment);
+        }
       }
     } catch (final Throwable e) {
       this.violationsLogger.log(SEVERE, "Could not get comments", e);
@@ -333,19 +351,44 @@ public class GitLabCommentsProvider implements CommentsProvider {
     return changedFiles;
   }
 
+  /**
+   * Resolves a comment's discussion instead of deleting the note, when that discussion is
+   * resolvable (a diff/single-file discussion). Deleting only the note leaves the discussion itself
+   * behind as an orphaned thread - GitLab doesn't allow deleting a resolvable discussion outright,
+   * only resolving it or removing every note in it one by one, neither of which makes the thread
+   * disappear. Plain top-level notes aren't part of a resolvable discussion and are still just
+   * deleted.
+   */
   @Override
   public void removeComments(final List<Comment> comments) {
     for (final Comment comment : comments) {
       try {
-        final Long noteId = Long.parseLong(comment.getIdentifier());
-        this.gitLabApi
-            .getNotesApi()
-            .deleteMergeRequestNote(
-                this.project.getId(), this.mergeRequestChanges.getIid(), noteId);
+        if (isResolvable(comment)) {
+          final String discussionId = comment.getSpecifics().get(SPECIFIC_DISCUSSION_ID);
+          this.gitLabApi
+              .getDiscussionsApi()
+              .resolveMergeRequestDiscussion(
+                  this.project.getId(), this.mergeRequestChanges.getIid(), discussionId, true);
+        } else {
+          final Long noteId = Long.parseLong(comment.getIdentifier());
+          this.gitLabApi
+              .getNotesApi()
+              .deleteMergeRequestNote(
+                  this.project.getId(), this.mergeRequestChanges.getIid(), noteId);
+        }
       } catch (final Throwable e) {
-        this.violationsLogger.log(SEVERE, "Could not delete note " + comment, e);
+        this.violationsLogger.log(SEVERE, "Could not remove/resolve comment " + comment, e);
       }
     }
+  }
+
+  /**
+   * Whether the comment belongs to a resolvable (diff/single-file) discussion, as recorded by
+   * {@link #getComments()} - as opposed to a plain top-level merge request note, which GitLab
+   * doesn't allow resolving.
+   */
+  static boolean isResolvable(final Comment comment) {
+    return Boolean.parseBoolean(comment.getSpecifics().get(SPECIFIC_RESOLVABLE));
   }
 
   @Override
