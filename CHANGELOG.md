@@ -1,3 +1,22 @@
+## 1.92.0 (2026-09-17)
+
+### Features
+
+-  resolve discussions instead of deleting notes that have them ([aff9d](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/aff9d1862ec0e68) Tomas Bjerre)  
+
+### Dependency updates
+
+- update plugin se.bjurr.gradle.bundle-jar to v2.3.0 (#23) ([e70ea](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/e70eac5286dc590) renovate[bot])  
+- update dependency se.bjurr.violations:violation-comments-lib to v1.111.0 (#22) ([51197](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/5119715bfb4706c) renovate[bot])  
+### Other changes
+
+**Merge pull request #24 from tomasbjerre/feat/resolve-discussions-instead-of-deleting**
+
+* feat: resolve discussions instead of deleting notes that have them 
+
+[0109a](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/0109a0c671de8f8) Tomas Bjerre *2026-09-17 18:52:13*
+
+
 ## 1.91.1 (2026-09-16)
 
 ### Bug Fixes
