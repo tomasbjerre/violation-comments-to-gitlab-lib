@@ -1,8 +1,11 @@
 package se.bjurr.violations.comments.gitlab.lib;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static se.bjurr.violations.comments.gitlab.lib.GitLabCommentsProvider.START_TITLE;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -10,6 +13,7 @@ import org.assertj.core.api.BooleanAssert;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.Test;
 import se.bjurr.violations.comments.lib.model.ChangedFile;
+import se.bjurr.violations.comments.lib.model.Comment;
 import se.bjurr.violations.lib.ViolationsLogger;
 
 public class GitLabCommentsProviderTest {
@@ -216,6 +220,29 @@ public class GitLabCommentsProviderTest {
     checker.shouldComment(22, 26).forEach(BooleanAssert::isTrue);
     checker.shouldComment(27, 30).forEach(BooleanAssert::isFalse);
     checker.assertAll();
+  }
+
+  @Test
+  public void testIsResolvableWhenDiscussionIsResolvable() {
+    final Comment comment = commentWithSpecifics("discussion-1", "true");
+    assertThat(GitLabCommentsProvider.isResolvable(comment)) //
+        .isTrue();
+  }
+
+  @Test
+  public void testIsResolvableWhenDiscussionIsNotResolvable() {
+    // A plain top-level merge request note - not part of a diff, so its discussion can't be
+    // resolved and it should still just be deleted.
+    final Comment comment = commentWithSpecifics("discussion-2", "false");
+    assertThat(GitLabCommentsProvider.isResolvable(comment)) //
+        .isFalse();
+  }
+
+  private static Comment commentWithSpecifics(final String discussionId, final String resolvable) {
+    final List<String> specifics = new ArrayList<>();
+    specifics.add(GitLabCommentsProvider.SPECIFIC_DISCUSSION_ID, discussionId);
+    specifics.add(GitLabCommentsProvider.SPECIFIC_RESOLVABLE, resolvable);
+    return new Comment("1", "content", "PR", specifics);
   }
 
   private static class CommentsChecker {
