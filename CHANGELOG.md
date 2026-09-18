@@ -1,3 +1,24 @@
+## 1.93.0 (2026-09-18)
+
+### Features
+
+-  add option to post the general comment as a resolvable thread ([b5c1b](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/b5c1bed9d9dcad7) Tomas Bjerre)  
+
+### Other changes
+
+**Merge pull request #26 from tomasbjerre/feat/create-comments-as-resolvable-threads**
+
+* feat: add option to post the general comment as a resolvable thread 
+
+[ce997](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/ce99708aa0884b2) Tomas Bjerre *2026-09-18 08:00:35*
+
+**Merge pull request #25 from tomasbjerre/test/wiremock-integration-tests**
+
+* test: add WireMock integration tests using real GitLab responses 
+
+[c1331](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/c133149d3057d35) Tomas Bjerre *2026-09-18 05:26:38*
+
+
 ## 1.92.0 (2026-09-17)
 
 ### Features
