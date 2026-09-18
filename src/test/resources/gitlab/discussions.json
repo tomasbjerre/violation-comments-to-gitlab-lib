@@ -1,0 +1,89 @@
+[
+  {
+    "id": "169264f08dbab9c202a9ce51db576e14b248ccf1",
+    "individual_note": false,
+    "resolvable": true,
+    "resolved": false,
+    "notes": [
+      {
+        "id": 106882047,
+        "type": "DiffNote",
+        "body": "zxcvsdfsdfdsf",
+        "author": {
+          "id": 1127406,
+          "username": "tomas.bjerre85",
+          "public_email": "",
+          "name": "Tomas Bjerre",
+          "state": "active",
+          "locked": false,
+          "avatar_url": "https://secure.gravatar.com/avatar/2ebf9a13328c5f67d5eaedaa787511d8bf97155b9115140b5a952e05aabda54a?s=80&d=identicon",
+          "web_url": "https://gitlab.com/tomas.bjerre85"
+        },
+        "created_at": "2018-10-05T18:10:09.418Z",
+        "updated_at": "2018-10-05T18:10:09.418Z",
+        "system": false,
+        "noteable_id": 17420843,
+        "noteable_type": "MergeRequest",
+        "project_id": 2732496,
+        "commit_id": "",
+        "position": {
+          "base_sha": "b563d040b08e991134454c56683c707b6759a7b6",
+          "start_sha": "b563d040b08e991134454c56683c707b6759a7b6",
+          "head_sha": "47b31bfe93f1a743b7fb8d3a88cbc6b116e30cb8",
+          "old_path": "hej",
+          "new_path": "hej",
+          "position_type": "text",
+          "old_line": null,
+          "new_line": 1,
+          "line_range": null
+        },
+        "resolvable": true,
+        "resolved": false,
+        "resolved_by": null,
+        "resolved_at": null,
+        "suggestions": [],
+        "confidential": false,
+        "internal": false,
+        "imported": false,
+        "imported_from": "none",
+        "noteable_iid": 2,
+        "commands_changes": {}
+      }
+    ]
+  },
+  {
+    "id": "85578c0b4791f52169f1a1c5618afc9bbf644edc",
+    "individual_note": true,
+    "resolvable": false,
+    "notes": [
+      {
+        "id": 3855893232,
+        "type": null,
+        "body": "Integration test top-level note 2026-09-18T05:12:11Z",
+        "author": {
+          "id": 1127406,
+          "username": "tomas.bjerre85",
+          "public_email": "",
+          "name": "Tomas Bjerre",
+          "state": "active",
+          "locked": false,
+          "avatar_url": "https://secure.gravatar.com/avatar/2ebf9a13328c5f67d5eaedaa787511d8bf97155b9115140b5a952e05aabda54a?s=80&d=identicon",
+          "web_url": "https://gitlab.com/tomas.bjerre85"
+        },
+        "created_at": "2026-09-18T05:12:11.618Z",
+        "updated_at": "2026-09-18T05:12:11.618Z",
+        "system": false,
+        "noteable_id": 17420843,
+        "noteable_type": "MergeRequest",
+        "project_id": 2732496,
+        "resolvable": false,
+        "confidential": false,
+        "internal": false,
+        "imported": false,
+        "imported_from": "none",
+        "noteable_iid": 2,
+        "commands_changes": {}
+      }
+    ]
+  }
+]
