@@ -1,0 +1,52 @@
+{
+  "id": "6caccf1581b1ffbfd225dd539425f5c6cdd46a58",
+  "individual_note": false,
+  "resolvable": true,
+  "resolved": false,
+  "notes": [
+    {
+      "id": 3855893855,
+      "type": "DiffNote",
+      "body": "Integration test diff discussion 2026-09-18T05:12:18Z",
+      "author": {
+        "id": 1127406,
+        "username": "tomas.bjerre85",
+        "public_email": "",
+        "name": "Tomas Bjerre",
+        "state": "active",
+        "locked": false,
+        "avatar_url": "https://secure.gravatar.com/avatar/2ebf9a13328c5f67d5eaedaa787511d8bf97155b9115140b5a952e05aabda54a?s=80&d=identicon",
+        "web_url": "https://gitlab.com/tomas.bjerre85"
+      },
+      "created_at": "2026-09-18T05:12:18.837Z",
+      "updated_at": "2026-09-18T05:12:18.837Z",
+      "system": false,
+      "noteable_id": 17420843,
+      "noteable_type": "MergeRequest",
+      "project_id": 2732496,
+      "commit_id": null,
+      "position": {
+        "base_sha": "b563d040b08e991134454c56683c707b6759a7b6",
+        "start_sha": "b563d040b08e991134454c56683c707b6759a7b6",
+        "head_sha": "47b31bfe93f1a743b7fb8d3a88cbc6b116e30cb8",
+        "old_path": "hej",
+        "new_path": "hej",
+        "position_type": "text",
+        "old_line": null,
+        "new_line": 1,
+        "line_range": null
+      },
+      "resolvable": true,
+      "resolved": false,
+      "resolved_by": null,
+      "resolved_at": null,
+      "suggestions": [],
+      "confidential": false,
+      "internal": false,
+      "imported": false,
+      "imported_from": "none",
+      "noteable_iid": 2,
+      "commands_changes": {}
+    }
+  ]
+}

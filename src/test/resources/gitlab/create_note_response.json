@@ -1,0 +1,28 @@
+{
+  "id": 3855893232,
+  "type": null,
+  "body": "Integration test top-level note 2026-09-18T05:12:11Z",
+  "author": {
+    "id": 1127406,
+    "username": "tomas.bjerre85",
+    "public_email": "",
+    "name": "Tomas Bjerre",
+    "state": "active",
+    "locked": false,
+    "avatar_url": "https://secure.gravatar.com/avatar/2ebf9a13328c5f67d5eaedaa787511d8bf97155b9115140b5a952e05aabda54a?s=80&d=identicon",
+    "web_url": "https://gitlab.com/tomas.bjerre85"
+  },
+  "created_at": "2026-09-18T05:12:11.618Z",
+  "updated_at": "2026-09-18T05:12:11.618Z",
+  "system": false,
+  "noteable_id": 17420843,
+  "noteable_type": "MergeRequest",
+  "project_id": 2732496,
+  "resolvable": false,
+  "confidential": false,
+  "internal": false,
+  "imported": false,
+  "imported_from": "none",
+  "noteable_iid": 2,
+  "commands_changes": {}
+}
