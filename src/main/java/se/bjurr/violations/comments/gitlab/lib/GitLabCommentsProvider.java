@@ -157,10 +157,27 @@ public class GitLabCommentsProvider implements CommentsProvider {
   public void createComment(final String comment) {
     this.markMergeRequestAsWIP();
     try {
-      this.gitLabApi
-          .getNotesApi()
-          .createMergeRequestNote(
-              this.project.getId(), this.mergeRequestChanges.getIid(), comment, null, false);
+      if (this.api.getCreateCommentsAsResolvableThreads()) {
+        // A discussion created without a diff position is a general thread, not anchored to a
+        // line - but it's still a resolvable one, same as a diff comment's thread already is.
+        final Date date = null;
+        final String positionHash = null;
+        final Position position = null;
+        this.gitLabApi
+            .getDiscussionsApi()
+            .createMergeRequestDiscussion(
+                this.project.getId(),
+                this.mergeRequestChanges.getIid(),
+                comment,
+                date,
+                positionHash,
+                position);
+      } else {
+        this.gitLabApi
+            .getNotesApi()
+            .createMergeRequestNote(
+                this.project.getId(), this.mergeRequestChanges.getIid(), comment, null, false);
+      }
     } catch (final Throwable e) {
       this.violationsLogger.log(SEVERE, "Could create comment " + comment, e);
     }

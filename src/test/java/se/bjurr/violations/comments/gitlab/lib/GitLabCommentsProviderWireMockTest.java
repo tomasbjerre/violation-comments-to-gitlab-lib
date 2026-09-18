@@ -242,4 +242,41 @@ class GitLabCommentsProviderWireMockTest {
         .contains("position[old_path]=hej")
         .contains("position[new_line]=1");
   }
+
+  @Test
+  void createCommentPostsAResolvableGeneralDiscussionWhenConfiguredTo() {
+    this.stubProjectAndMergeRequest();
+    this.wireMock.stubFor(
+        post(urlPathEqualTo(MR_PATH + "/discussions")) //
+            .willReturn(okJson(fixture("create_general_discussion_response.json"))));
+
+    final ViolationCommentsToGitLabApi api =
+        this.newApi().withCreateCommentsAsResolvableThreads(true);
+    final GitLabCommentsProvider provider = this.newProvider(api);
+
+    provider.createComment("Integration test general resolvable thread");
+
+    final String discussionBody =
+        this.lastRequestBodyDecoded(postRequestedFor(urlPathEqualTo(MR_PATH + "/discussions")));
+    assertThat(discussionBody)
+        .contains("body=Integration test general resolvable thread")
+        .doesNotContain("position[");
+  }
+
+  @Test
+  void createCommentPostsAPlainNoteByDefault() {
+    this.stubProjectAndMergeRequest();
+    this.wireMock.stubFor(
+        post(urlPathEqualTo(MR_PATH + "/notes")) //
+            .willReturn(okJson(fixture("create_note_response.json"))));
+
+    final GitLabCommentsProvider provider = this.newProvider(this.newApi());
+
+    provider.createComment("Integration test default note");
+
+    this.wireMock.verify(0, postRequestedFor(urlPathEqualTo(MR_PATH + "/discussions")));
+    final String noteBody =
+        this.lastRequestBodyDecoded(postRequestedFor(urlPathEqualTo(MR_PATH + "/notes")));
+    assertThat(noteBody).contains("Integration test default note");
+  }
 }
