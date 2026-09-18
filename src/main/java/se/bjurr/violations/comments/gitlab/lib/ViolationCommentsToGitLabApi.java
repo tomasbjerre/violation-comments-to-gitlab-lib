@@ -43,6 +43,7 @@ public class ViolationCommentsToGitLabApi {
   private Integer maxCommentSize;
   private boolean shouldCommentOnlyChangedFiles = true;
   private boolean logRequestResponse;
+  private boolean createCommentsAsResolvableThreads;
 
   private static final String DEFAULT_VIOLATION_TEMPLATE_MUSTACH =
       "/default-violation-template-gitlab.mustach";
@@ -183,6 +184,25 @@ public class ViolationCommentsToGitLabApi {
    */
   public boolean getCreateSingleFileComments() {
     return this.createSingleFileComments;
+  }
+
+  /**
+   * Gets if the general/summary comment should be posted as a resolvable discussion thread, rather
+   * than a plain note. GitLab has no separate "task" concept; a discussion thread created without a
+   * diff position is the closest equivalent - it can be marked resolved, the same as a diff
+   * comment's thread already is.
+   *
+   * @return <code>true</code> if the general comment should be posted as a resolvable thread,
+   *     <code>false</code> if it should be a plain note (the default, unchanged behavior).
+   */
+  public boolean getCreateCommentsAsResolvableThreads() {
+    return this.createCommentsAsResolvableThreads;
+  }
+
+  public ViolationCommentsToGitLabApi withCreateCommentsAsResolvableThreads(
+      final boolean createCommentsAsResolvableThreads) {
+    this.createCommentsAsResolvableThreads = createCommentsAsResolvableThreads;
+    return this;
   }
 
   public void toPullRequest() throws Exception {
