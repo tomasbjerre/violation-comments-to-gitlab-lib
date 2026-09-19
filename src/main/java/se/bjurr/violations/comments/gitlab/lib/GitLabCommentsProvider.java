@@ -168,7 +168,6 @@ public class GitLabCommentsProvider implements CommentsProvider {
   }
 
   @Override
-  @SuppressFBWarnings("NP_LOAD_OF_KNOWN_NULL_VALUE")
   public void createSingleFileComment(
       final ChangedFile file, final Integer newLine, final String content) {
     this.markMergeRequestAsWIP();
