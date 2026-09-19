@@ -1,3 +1,22 @@
+## 2.0.0 (2026-09-19)
+
+### Breaking changes
+
+-  drop gitlab4j-api for a first-party client, add draft notes batching ([776e2](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/776e2fd5a24263e) Tomas Bjerre)  
+
+### Features
+
+-  drop gitlab4j-api for a first-party client, add draft notes batching ([776e2](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/776e2fd5a24263e) Tomas Bjerre)  
+
+### Other changes
+
+**Merge pull request #29 from tomasbjerre/feat/drop-gitlab4j-api-first-party-client**
+
+* feat!: drop gitlab4j-api for a first-party client, add draft notes batching 
+
+[d077b](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/d077bb63d032cab) Tomas Bjerre *2026-09-19 15:09:45*
+
+
 ## 1.93.0 (2026-09-18)
 
 ### Features
