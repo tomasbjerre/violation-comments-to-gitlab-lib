@@ -1,0 +1,21 @@
+{
+  "id": 82300001,
+  "author_id": 1127406,
+  "merge_request_id": 17420843,
+  "resolve_discussion": false,
+  "discussion_id": null,
+  "note": "Integration test draft note",
+  "commit_id": null,
+  "line_code": null,
+  "position": {
+    "base_sha": "b563d040b08e991134454c56683c707b6759a7b6",
+    "start_sha": "b563d040b08e991134454c56683c707b6759a7b6",
+    "head_sha": "47b31bfe93f1a743b7fb8d3a88cbc6b116e30cb8",
+    "old_path": "hej",
+    "new_path": "hej",
+    "position_type": "text",
+    "old_line": null,
+    "new_line": 1,
+    "line_range": null
+  }
+}

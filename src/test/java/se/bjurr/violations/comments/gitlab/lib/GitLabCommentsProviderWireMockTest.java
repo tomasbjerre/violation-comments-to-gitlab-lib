@@ -18,13 +18,10 @@ import com.github.tomakehurst.wiremock.matching.RequestPatternBuilder;
 import com.github.tomakehurst.wiremock.verification.LoggedRequest;
 import java.io.IOException;
 import java.io.UncheckedIOException;
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.logging.Level;
-import org.gitlab4j.models.Constants.TokenType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -37,15 +34,13 @@ import se.bjurr.violations.lib.ViolationsLogger;
  * https://gitlab.com/tomas.bjerre85/violations-test/-/merge_requests/2 (project id 2732496, MR iid
  * 2). Unlike {@link GitLabCommentsProviderTest}, which exercises the pure decision logic in
  * isolation, these tests drive the provider through its public constructor - the one production
- * code uses - so the real gitlab4j-api wiring (URLs, request payload shapes, response parsing) is
- * covered too, not just the {@code isResolvable}/{@code shouldComment} helpers.
+ * code uses - so the real HTTP wiring (URLs, request payload shapes, response parsing) done by the
+ * first-party {@link se.bjurr.violations.comments.gitlab.lib.client.GitLabApiClient} is covered
+ * too, not just the {@code isResolvable}/{@code shouldComment} helpers.
  *
  * <p>The fixtures under {@code src/test/resources/gitlab} are the unmodified bodies GitLab returned
- * for these exact calls; only the {@code discussions.json} fixture is assembled from two such real
- * records (a resolvable diff discussion already on the MR, and a plain top-level note this test
- * suite created and then deleted) so a single {@code getComments()} call exercises both paths that
- * PR #24 (https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/pull/24) added: resolving
- * a discussion vs. deleting a note.
+ * for these exact calls; only {@code discussions.json} and {@code create_draft_note_response.json}
+ * are assembled/reconstructed to exercise more than one call's worth of shapes in a single fixture.
  */
 class GitLabCommentsProviderWireMockTest {
 
@@ -105,11 +100,10 @@ class GitLabCommentsProviderWireMockTest {
     }
   }
 
-  private String lastRequestBodyDecoded(final RequestPatternBuilder pattern) {
+  private String lastRequestBody(final RequestPatternBuilder pattern) {
     final List<LoggedRequest> requests = this.wireMock.findAll(pattern);
     assertThat(requests).isNotEmpty();
-    final String raw = requests.get(requests.size() - 1).getBodyAsString();
-    return URLDecoder.decode(raw, StandardCharsets.UTF_8);
+    return requests.get(requests.size() - 1).getBodyAsString();
   }
 
   @Test
@@ -158,9 +152,9 @@ class GitLabCommentsProviderWireMockTest {
     provider.removeComments(List.of(comment));
 
     final String resolveBody =
-        this.lastRequestBodyDecoded(
+        this.lastRequestBody(
             putRequestedFor(urlPathEqualTo(MR_PATH + "/discussions/" + discussionId)));
-    assertThat(resolveBody).contains("resolved=true");
+    assertThat(resolveBody).contains("\"resolved\":true");
     this.wireMock.verify(0, deleteRequestedFor(urlPathEqualTo(MR_PATH + "/notes/106882047")));
   }
 
@@ -205,11 +199,11 @@ class GitLabCommentsProviderWireMockTest {
     provider.createComment("Integration test top-level note");
 
     final String noteBody =
-        this.lastRequestBodyDecoded(postRequestedFor(urlPathEqualTo(MR_PATH + "/notes")));
-    assertThat(noteBody).contains("Integration test top-level note");
+        this.lastRequestBody(postRequestedFor(urlPathEqualTo(MR_PATH + "/notes")));
+    assertThat(noteBody).contains("\"body\":\"Integration test top-level note\"");
 
-    final String titleBody = this.lastRequestBodyDecoded(putRequestedFor(urlPathEqualTo(MR_PATH)));
-    assertThat(titleBody).contains("title=" + GitLabCommentsProvider.START_TITLE);
+    final String titleBody = this.lastRequestBody(putRequestedFor(urlPathEqualTo(MR_PATH)));
+    assertThat(titleBody).contains("\"title\":\"" + GitLabCommentsProvider.START_TITLE);
   }
 
   @Test
@@ -232,15 +226,15 @@ class GitLabCommentsProviderWireMockTest {
     provider.createSingleFileComment(file, 1, "Integration test diff discussion");
 
     final String discussionBody =
-        this.lastRequestBodyDecoded(postRequestedFor(urlPathEqualTo(MR_PATH + "/discussions")));
+        this.lastRequestBody(postRequestedFor(urlPathEqualTo(MR_PATH + "/discussions")));
     assertThat(discussionBody)
-        .contains("body=Integration test diff discussion")
-        .contains("position[base_sha]=b563d040b08e991134454c56683c707b6759a7b6")
-        .contains("position[start_sha]=b563d040b08e991134454c56683c707b6759a7b6")
-        .contains("position[head_sha]=47b31bfe93f1a743b7fb8d3a88cbc6b116e30cb8")
-        .contains("position[new_path]=hej")
-        .contains("position[old_path]=hej")
-        .contains("position[new_line]=1");
+        .contains("\"body\":\"Integration test diff discussion\"")
+        .contains("\"base_sha\":\"b563d040b08e991134454c56683c707b6759a7b6\"")
+        .contains("\"start_sha\":\"b563d040b08e991134454c56683c707b6759a7b6\"")
+        .contains("\"head_sha\":\"47b31bfe93f1a743b7fb8d3a88cbc6b116e30cb8\"")
+        .contains("\"new_path\":\"hej\"")
+        .contains("\"old_path\":\"hej\"")
+        .contains("\"new_line\":1");
   }
 
   @Test
@@ -257,10 +251,10 @@ class GitLabCommentsProviderWireMockTest {
     provider.createComment("Integration test general resolvable thread");
 
     final String discussionBody =
-        this.lastRequestBodyDecoded(postRequestedFor(urlPathEqualTo(MR_PATH + "/discussions")));
+        this.lastRequestBody(postRequestedFor(urlPathEqualTo(MR_PATH + "/discussions")));
     assertThat(discussionBody)
-        .contains("body=Integration test general resolvable thread")
-        .doesNotContain("position[");
+        .contains("\"body\":\"Integration test general resolvable thread\"")
+        .doesNotContain("\"position\"");
   }
 
   @Test
@@ -276,7 +270,71 @@ class GitLabCommentsProviderWireMockTest {
 
     this.wireMock.verify(0, postRequestedFor(urlPathEqualTo(MR_PATH + "/discussions")));
     final String noteBody =
-        this.lastRequestBodyDecoded(postRequestedFor(urlPathEqualTo(MR_PATH + "/notes")));
-    assertThat(noteBody).contains("Integration test default note");
+        this.lastRequestBody(postRequestedFor(urlPathEqualTo(MR_PATH + "/notes")));
+    assertThat(noteBody).contains("\"body\":\"Integration test default note\"");
+  }
+
+  @Test
+  void createSingleFileCommentCreatesADraftNoteInsteadOfADiscussionWhenUseDraftNotesIsEnabled() {
+    this.stubProjectAndMergeRequest();
+    this.wireMock.stubFor(
+        post(urlPathEqualTo(MR_PATH + "/draft_notes")) //
+            .willReturn(okJson(fixture("create_draft_note_response.json"))));
+
+    final ViolationCommentsToGitLabApi api = this.newApi().withUseDraftNotes(true);
+    final GitLabCommentsProvider provider = this.newProvider(api);
+
+    final ChangedFile file =
+        new ChangedFile(
+            "hej", List.of("@@ -0,0 +1 @@\n+asdasd\n", "hej", "hej", "false", "false", "false"));
+
+    provider.createSingleFileComment(file, 1, "Integration test draft note");
+
+    final String draftNoteBody =
+        this.lastRequestBody(postRequestedFor(urlPathEqualTo(MR_PATH + "/draft_notes")));
+    assertThat(draftNoteBody)
+        .contains("\"note\":\"Integration test draft note\"")
+        .contains("\"new_line\":1");
+    this.wireMock.verify(0, postRequestedFor(urlPathEqualTo(MR_PATH + "/discussions")));
+  }
+
+  @Test
+  void flushPendingDraftNotesPublishesBufferedDraftNotesAsASingleReview() {
+    this.stubProjectAndMergeRequest();
+    this.wireMock.stubFor(
+        post(urlPathEqualTo(MR_PATH + "/draft_notes")) //
+            .willReturn(okJson(fixture("create_draft_note_response.json"))));
+    this.wireMock.stubFor(
+        post(urlPathEqualTo(MR_PATH + "/draft_notes/bulk_publish")) //
+            .willReturn(noContent()));
+
+    final ViolationCommentsToGitLabApi api = this.newApi().withUseDraftNotes(true);
+    final GitLabCommentsProvider provider = this.newProvider(api);
+
+    final ChangedFile file =
+        new ChangedFile(
+            "hej", List.of("@@ -0,0 +1 @@\n+asdasd\n", "hej", "hej", "false", "false", "false"));
+    provider.createSingleFileComment(file, 1, "First");
+    provider.createSingleFileComment(file, 1, "Second");
+
+    this.wireMock.verify(
+        0, postRequestedFor(urlPathEqualTo(MR_PATH + "/draft_notes/bulk_publish")));
+
+    provider.flushPendingDraftNotes();
+
+    this.wireMock.verify(
+        1, postRequestedFor(urlPathEqualTo(MR_PATH + "/draft_notes/bulk_publish")));
+    this.wireMock.verify(2, postRequestedFor(urlPathEqualTo(MR_PATH + "/draft_notes")));
+  }
+
+  @Test
+  void flushPendingDraftNotesDoesNothingWhenNoDraftNotesWereCreated() {
+    final GitLabCommentsProvider provider =
+        new GitLabCommentsProvider(this.violationsLogger, this.newApi(), null, null, null, null);
+
+    provider.flushPendingDraftNotes();
+
+    this.wireMock.verify(
+        0, postRequestedFor(urlPathEqualTo(MR_PATH + "/draft_notes/bulk_publish")));
   }
 }
