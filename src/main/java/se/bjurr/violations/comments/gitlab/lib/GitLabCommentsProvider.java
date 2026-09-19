@@ -4,28 +4,17 @@ import static java.util.logging.Level.SEVERE;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.logging.Level;
-import java.util.logging.LogRecord;
-import java.util.logging.Logger;
 import java.util.stream.IntStream;
-import org.gitlab4j.api.Constants;
-import org.gitlab4j.api.GitLabApi;
-import org.gitlab4j.api.GitLabApiException;
-import org.gitlab4j.api.ProxyClientConfig;
-import org.gitlab4j.api.models.Diff;
-import org.gitlab4j.api.models.DiffRef;
-import org.gitlab4j.api.models.Discussion;
-import org.gitlab4j.api.models.MergeRequest;
-import org.gitlab4j.api.models.Note;
-import org.gitlab4j.api.models.Position;
-import org.gitlab4j.api.models.Project;
-import org.gitlab4j.models.Constants.TokenType;
+import se.bjurr.violations.comments.gitlab.lib.client.GitLabApiClient;
+import se.bjurr.violations.comments.gitlab.lib.client.model.DiffRefDto;
+import se.bjurr.violations.comments.gitlab.lib.client.model.DiscussionDto;
+import se.bjurr.violations.comments.gitlab.lib.client.model.MergeRequestDto;
+import se.bjurr.violations.comments.gitlab.lib.client.model.NoteDto;
+import se.bjurr.violations.comments.gitlab.lib.client.model.PositionInput;
+import se.bjurr.violations.comments.gitlab.lib.client.model.ProjectDto;
 import se.bjurr.violations.comments.lib.CommentsProvider;
 import se.bjurr.violations.comments.lib.model.ChangedFile;
 import se.bjurr.violations.comments.lib.model.Comment;
@@ -33,30 +22,30 @@ import se.bjurr.violations.lib.ViolationsLogger;
 import se.bjurr.violations.lib.util.PatchParserUtil;
 
 public class GitLabCommentsProvider implements CommentsProvider {
-  private static final String MASK = "HIDDEN";
   static final String START_TITLE = "WIP: (VIOLATIONS)";
   private final ViolationCommentsToGitLabApi api;
   private final ViolationsLogger violationsLogger;
-  private final GitLabApi gitLabApi;
-  private final Project project;
-  private final MergeRequest mergeRequestChanges;
-  private final MergeRequest mergeRequest;
+  private final GitLabApiClient gitLabApiClient;
+  private final ProjectDto project;
+  private final MergeRequestDto mergeRequestChanges;
+  private final MergeRequestDto mergeRequest;
+  private boolean hasPendingDraftNotes;
 
   public GitLabCommentsProvider(
       final ViolationsLogger violationsLogger, final ViolationCommentsToGitLabApi api) {
-    this(violationsLogger, api, initGitLabApi(violationsLogger, api));
+    this(violationsLogger, api, initGitLabApiClient(violationsLogger, api));
   }
 
   protected GitLabCommentsProvider(
       final ViolationsLogger violationsLogger,
       final ViolationCommentsToGitLabApi api,
-      final GitLabApi gitLabApi,
-      final Project project,
-      final MergeRequest mergeRequestChanges,
-      final MergeRequest mergeRequest) {
+      final GitLabApiClient gitLabApiClient,
+      final ProjectDto project,
+      final MergeRequestDto mergeRequestChanges,
+      final MergeRequestDto mergeRequest) {
     this.api = api;
     this.violationsLogger = violationsLogger;
-    this.gitLabApi = gitLabApi;
+    this.gitLabApiClient = gitLabApiClient;
     this.project = project;
     this.mergeRequestChanges = mergeRequestChanges;
     this.mergeRequest = mergeRequest;
@@ -65,92 +54,60 @@ public class GitLabCommentsProvider implements CommentsProvider {
   private GitLabCommentsProvider(
       final ViolationsLogger violationsLogger,
       final ViolationCommentsToGitLabApi api,
-      final GitLabApi gitLabApi) {
+      final GitLabApiClient gitLabApiClient) {
     this(
         violationsLogger,
         api,
-        gitLabApi,
-        initProject(api, gitLabApi),
-        initMergeRequestChanges(api, gitLabApi),
-        initMergeRequest(api, gitLabApi));
+        gitLabApiClient,
+        initProject(api, gitLabApiClient),
+        initMergeRequestChanges(api, gitLabApiClient),
+        initMergeRequest(api, gitLabApiClient));
   }
 
-  @SuppressFBWarnings({"NP_LOAD_OF_KNOWN_NULL_VALUE", "SIC_INNER_SHOULD_BE_STATIC_ANON"})
-  private static GitLabApi initGitLabApi(
+  private static GitLabApiClient initGitLabApiClient(
       final ViolationsLogger violationsLogger, final ViolationCommentsToGitLabApi api) {
-    final String hostUrl = api.getHostUrl();
-    final String apiToken = api.getApiToken();
-    final Map<String, Object> proxyConfig = getProxyConfig(api);
-    final TokenType tokenType = TokenType.valueOf(api.getTokenType().name());
-    final String secretToken = null;
-    final GitLabApi gitLabApi =
-        new GitLabApi(hostUrl, tokenType, apiToken, secretToken, proxyConfig);
-    gitLabApi.setIgnoreCertificateErrors(api.isIgnoreCertificateErrors());
-    if (api.isLogRequestResponse()) {
-      gitLabApi.withRequestResponseLogging(
-          new Logger(GitLabCommentsProvider.class.getName(), null) {
-            @Override
-            public void log(final LogRecord record) {
-              String masked =
-                  record
-                      .getMessage() //
-                      .replace(apiToken, MASK);
-              if (api.findProxyPassword().isPresent()) {
-                masked = masked.replace(api.findProxyPassword().get(), MASK);
-              }
-              violationsLogger.log(record.getLevel(), masked);
-            }
-          },
-          Level.INFO);
-    }
-    return gitLabApi;
+    return new GitLabApiClient(
+        violationsLogger,
+        api.getHostUrl(),
+        api.getTokenType(),
+        api.getApiToken(),
+        api.isIgnoreCertificateErrors(),
+        api.findProxyServer().orElse(null),
+        api.findProxyUser().orElse(null),
+        api.findProxyPassword().orElse(null),
+        api.isLogRequestResponse());
   }
 
-  private static Project initProject(
-      final ViolationCommentsToGitLabApi api, final GitLabApi gitLabApi) {
+  private static ProjectDto initProject(
+      final ViolationCommentsToGitLabApi api, final GitLabApiClient gitLabApiClient) {
     final String projectId = api.getProjectId();
     try {
-      return gitLabApi.getProjectApi().getProject(projectId);
-    } catch (final GitLabApiException e) {
+      return gitLabApiClient.getProject(projectId);
+    } catch (final Throwable e) {
       throw new RuntimeException("Could not get project " + projectId, e);
     }
   }
 
-  private static MergeRequest initMergeRequest(
-      final ViolationCommentsToGitLabApi api, final GitLabApi gitLabApi) {
+  private static MergeRequestDto initMergeRequest(
+      final ViolationCommentsToGitLabApi api, final GitLabApiClient gitLabApiClient) {
     final String projectId = api.getProjectId();
     final Long mergeRequestId = api.getMergeRequestIid();
     try {
-      // This will populate diff_refs,
-      // https://docs.gitlab.com/ee/api/merge_requests.html#get-single-mr
-      return gitLabApi.getMergeRequestApi().getMergeRequest(projectId, mergeRequestId);
+      return gitLabApiClient.getMergeRequest(projectId, mergeRequestId);
     } catch (final Throwable e) {
       throw new RuntimeException("Could not get MR " + projectId + " " + mergeRequestId, e);
     }
   }
 
-  private static MergeRequest initMergeRequestChanges(
-      final ViolationCommentsToGitLabApi api, final GitLabApi gitLabApi) {
+  private static MergeRequestDto initMergeRequestChanges(
+      final ViolationCommentsToGitLabApi api, final GitLabApiClient gitLabApiClient) {
     final String projectId = api.getProjectId();
     final Long mergeRequestId = api.getMergeRequestIid();
     try {
-      return gitLabApi.getMergeRequestApi().getMergeRequestChanges(projectId, mergeRequestId);
+      return gitLabApiClient.getMergeRequestChanges(projectId, mergeRequestId);
     } catch (final Throwable e) {
       throw new RuntimeException("Could not get MR " + projectId + " " + mergeRequestId, e);
     }
-  }
-
-  private static Map<String, Object> getProxyConfig(final ViolationCommentsToGitLabApi api) {
-    if (api.findProxyServer().isPresent()) {
-      if (!api.findProxyUser().isPresent() || !api.findProxyPassword().isPresent()) {
-        return ProxyClientConfig.createProxyClientConfig(api.findProxyServer().get());
-      }
-      if (api.findProxyUser().isPresent() && api.findProxyPassword().isPresent()) {
-        return ProxyClientConfig.createProxyClientConfig(
-            api.findProxyServer().get(), api.findProxyUser().get(), api.findProxyPassword().get());
-      }
-    }
-    return new HashMap<String, Object>();
   }
 
   @Override
@@ -160,23 +117,12 @@ public class GitLabCommentsProvider implements CommentsProvider {
       if (this.api.getCreateCommentsAsResolvableThreads()) {
         // A discussion created without a diff position is a general thread, not anchored to a
         // line - but it's still a resolvable one, same as a diff comment's thread already is.
-        final Date date = null;
-        final String positionHash = null;
-        final Position position = null;
-        this.gitLabApi
-            .getDiscussionsApi()
-            .createMergeRequestDiscussion(
-                this.project.getId(),
-                this.mergeRequestChanges.getIid(),
-                comment,
-                date,
-                positionHash,
-                position);
+        final PositionInput position = null;
+        this.gitLabApiClient.createMergeRequestDiscussion(
+            String.valueOf(this.project.id), this.mergeRequestChanges.iid, comment, position);
       } else {
-        this.gitLabApi
-            .getNotesApi()
-            .createMergeRequestNote(
-                this.project.getId(), this.mergeRequestChanges.getIid(), comment, null, false);
+        this.gitLabApiClient.createMergeRequestNote(
+            String.valueOf(this.project.id), this.mergeRequestChanges.iid, comment);
       }
     } catch (final Throwable e) {
       this.violationsLogger.log(SEVERE, "Could create comment " + comment, e);
@@ -186,49 +132,22 @@ public class GitLabCommentsProvider implements CommentsProvider {
   /**
    * Set the merge request as "Work in Progress" if configured to do so by the shouldSetWIP flag.
    */
-  @SuppressFBWarnings("NP_LOAD_OF_KNOWN_NULL_VALUE")
   private void markMergeRequestAsWIP() {
     if (!this.api.getShouldSetWIP()) {
       return;
     }
 
-    final String currentTitle = this.mergeRequestChanges.getTitle();
+    final String currentTitle = this.mergeRequestChanges.title;
     final Optional<String> titleOpt = getTitleWithWipPrefix(currentTitle);
     if (!titleOpt.isPresent()) {
       // To avoid setting WIP again on new comments
       return;
     }
-    final Long projectId = this.project.getId();
-    final Long mergeRequestIid = this.mergeRequestChanges.getIid();
-    final String targetBranch = null;
-    final Long assigneeId = null;
     final String title = titleOpt.get();
-    final String description = null;
-    final Constants.StateEvent stateEvent = null;
-    final String labels = null;
-    final Long milestoneId = null;
-    final Boolean removeSourceBranch = null;
-    final Boolean squash = null;
-    final Boolean discussionLocked = null;
-    final Boolean allowCollaboration = null;
     try {
-      this.mergeRequestChanges.setTitle(title);
-      this.gitLabApi
-          .getMergeRequestApi()
-          .updateMergeRequest(
-              projectId,
-              mergeRequestIid,
-              targetBranch,
-              title,
-              assigneeId,
-              description,
-              stateEvent,
-              labels,
-              milestoneId,
-              removeSourceBranch,
-              squash,
-              discussionLocked,
-              allowCollaboration);
+      this.mergeRequestChanges.title = title;
+      this.gitLabApiClient.updateMergeRequestTitle(
+          String.valueOf(this.project.id), this.mergeRequestChanges.iid, title);
     } catch (final Throwable e) {
       this.violationsLogger.log(SEVERE, e.getMessage(), e);
     }
@@ -253,20 +172,15 @@ public class GitLabCommentsProvider implements CommentsProvider {
   public void createSingleFileComment(
       final ChangedFile file, final Integer newLine, final String content) {
     this.markMergeRequestAsWIP();
-    Long projectId = null;
-    final DiffRef diffRefs = this.mergeRequest.getDiffRefs();
+    final DiffRefDto diffRefs = this.mergeRequest.diffRefs;
     Objects.requireNonNull(
         diffRefs,
         "diffRefs is null for MR with Iid "
-            + this.mergeRequest.getIid()
+            + this.mergeRequest.iid
             + " in projectId "
-            + this.mergeRequest.getProjectId());
-    Position position = null;
+            + this.mergeRequest.projectId);
+    PositionInput position = null;
     try {
-      projectId = this.project.getId();
-      final String baseSha = diffRefs.getBaseSha();
-      final String startSha = diffRefs.getStartSha();
-      final String headSha = diffRefs.getHeadSha();
       final String patchString = file.getSpecifics().get(0);
       final String oldPath = file.getSpecifics().get(1);
       final String newPath = file.getSpecifics().get(2);
@@ -274,21 +188,23 @@ public class GitLabCommentsProvider implements CommentsProvider {
           new PatchParserUtil(patchString) //
               .findOldLine(newLine) //
               .orElse(null);
-      final Date date = null;
-      final String positionHash = null;
-      position = new Position();
-      position.setPositionType(Position.PositionType.TEXT);
-      position.setBaseSha(baseSha);
-      position.setStartSha(startSha);
-      position.setHeadSha(headSha);
-      position.setNewLine(newLine);
-      position.setNewPath(newPath);
-      position.setOldLine(oldLine);
-      position.setOldPath(oldPath);
-      this.gitLabApi
-          .getDiscussionsApi()
-          .createMergeRequestDiscussion(
-              projectId, this.mergeRequestChanges.getIid(), content, date, positionHash, position);
+      position =
+          new PositionInput(
+              diffRefs.baseSha,
+              diffRefs.startSha,
+              diffRefs.headSha,
+              oldPath,
+              newPath,
+              oldLine,
+              newLine);
+      if (this.api.getUseDraftNotes()) {
+        this.gitLabApiClient.createDraftNote(
+            String.valueOf(this.project.id), this.mergeRequestChanges.iid, content, position);
+        this.hasPendingDraftNotes = true;
+      } else {
+        this.gitLabApiClient.createMergeRequestDiscussion(
+            String.valueOf(this.project.id), this.mergeRequestChanges.iid, content, position);
+      }
     } catch (final Throwable e) {
       final String lineSeparator = System.lineSeparator();
       this.violationsLogger.log(
@@ -296,7 +212,7 @@ public class GitLabCommentsProvider implements CommentsProvider {
           "Could not create diff discussion!"
               + lineSeparator
               + "ProjectID: "
-              + projectId
+              + this.project.id
               + lineSeparator
               + "Violation: "
               + content
@@ -304,6 +220,26 @@ public class GitLabCommentsProvider implements CommentsProvider {
               + ", position "
               + position,
           e);
+    }
+  }
+
+  /**
+   * Publishes any draft notes buffered by {@link #createSingleFileComment} (when {@link
+   * ViolationCommentsToGitLabApi#getUseDraftNotes()} is {@code true}) as a single GitLab review,
+   * instead of one immediately-visible discussion per call. Must be called once after all comments
+   * have been created.
+   */
+  public void flushPendingDraftNotes() {
+    if (!this.hasPendingDraftNotes) {
+      return;
+    }
+    try {
+      this.gitLabApiClient.bulkPublishDraftNotes(
+          String.valueOf(this.project.id), this.mergeRequestChanges.iid);
+    } catch (final Throwable e) {
+      this.violationsLogger.log(SEVERE, e.getMessage(), e);
+    } finally {
+      this.hasPendingDraftNotes = false;
     }
   }
 
@@ -318,26 +254,25 @@ public class GitLabCommentsProvider implements CommentsProvider {
   static final int SPECIFIC_RESOLVABLE = 1;
 
   @Override
+  @SuppressFBWarnings("NP_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD")
   public List<Comment> getComments() {
     final List<Comment> found = new ArrayList<>();
     try {
       // Fetched via discussions, rather than the flat notes list, because resolving a comment
       // (see removeComments()) needs the id of the discussion it belongs to - which only the
       // Discussions API exposes.
-      final List<Discussion> discussions =
-          this.gitLabApi
-              .getDiscussionsApi()
-              .getMergeRequestDiscussions(this.project.getId(), this.mergeRequestChanges.getIid());
+      final List<DiscussionDto> discussions =
+          this.gitLabApiClient.getMergeRequestDiscussions(
+              String.valueOf(this.project.id), this.mergeRequestChanges.iid);
 
-      for (final Discussion discussion : discussions) {
-        for (final Note note : discussion.getNotes()) {
-          final String identifier = note.getId().toString();
-          final String content = note.getBody();
+      for (final DiscussionDto discussion : discussions) {
+        for (final NoteDto note : discussion.notes) {
+          final String identifier = Long.toString(note.id);
+          final String content = note.body;
           final String type = "PR";
           final List<String> specifics = new ArrayList<>();
-          specifics.add(SPECIFIC_DISCUSSION_ID, discussion.getId());
-          specifics.add(
-              SPECIFIC_RESOLVABLE, String.valueOf(Boolean.TRUE.equals(note.getResolvable())));
+          specifics.add(SPECIFIC_DISCUSSION_ID, discussion.id);
+          specifics.add(SPECIFIC_RESOLVABLE, String.valueOf(Boolean.TRUE.equals(note.resolvable)));
           final Comment comment = new Comment(identifier, content, type, specifics);
           found.add(comment);
         }
@@ -349,18 +284,18 @@ public class GitLabCommentsProvider implements CommentsProvider {
   }
 
   @Override
+  @SuppressFBWarnings("NP_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD")
   public List<ChangedFile> getFiles() {
     final List<ChangedFile> changedFiles = new ArrayList<>();
-    for (final Diff change : this.mergeRequestChanges.getChanges()) {
-      final String filename = change.getNewPath();
+    for (final var change : this.mergeRequestChanges.changes) {
+      final String filename = change.newPath;
       final List<String> specifics = new ArrayList<>();
-      final String patchString = change.getDiff();
-      specifics.add(patchString);
-      specifics.add(change.getOldPath());
-      specifics.add(change.getNewPath());
-      specifics.add(change.getNewFile().toString());
-      specifics.add(change.getRenamedFile().toString());
-      specifics.add(change.getDeletedFile().toString());
+      specifics.add(change.diff);
+      specifics.add(change.oldPath);
+      specifics.add(change.newPath);
+      specifics.add(Boolean.toString(change.newFile));
+      specifics.add(Boolean.toString(change.renamedFile));
+      specifics.add(Boolean.toString(change.deletedFile));
       final ChangedFile changedFile = new ChangedFile(filename, specifics);
       changedFiles.add(changedFile);
     }
@@ -382,16 +317,12 @@ public class GitLabCommentsProvider implements CommentsProvider {
       try {
         if (isResolvable(comment)) {
           final String discussionId = comment.getSpecifics().get(SPECIFIC_DISCUSSION_ID);
-          this.gitLabApi
-              .getDiscussionsApi()
-              .resolveMergeRequestDiscussion(
-                  this.project.getId(), this.mergeRequestChanges.getIid(), discussionId, true);
+          this.gitLabApiClient.resolveMergeRequestDiscussion(
+              String.valueOf(this.project.id), this.mergeRequestChanges.iid, discussionId);
         } else {
-          final Long noteId = Long.parseLong(comment.getIdentifier());
-          this.gitLabApi
-              .getNotesApi()
-              .deleteMergeRequestNote(
-                  this.project.getId(), this.mergeRequestChanges.getIid(), noteId);
+          final long noteId = Long.parseLong(comment.getIdentifier());
+          this.gitLabApiClient.deleteMergeRequestNote(
+              String.valueOf(this.project.id), this.mergeRequestChanges.iid, noteId);
         }
       } catch (final Throwable e) {
         this.violationsLogger.log(SEVERE, "Could not remove/resolve comment " + comment, e);

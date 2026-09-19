@@ -13,8 +13,6 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-import org.gitlab4j.models.Constants.TokenType;
-import se.bjurr.violations.comments.lib.CommentsProvider;
 import se.bjurr.violations.lib.ViolationsLogger;
 import se.bjurr.violations.lib.model.Violation;
 import se.bjurr.violations.lib.util.Utils;
@@ -44,6 +42,7 @@ public class ViolationCommentsToGitLabApi {
   private boolean shouldCommentOnlyChangedFiles = true;
   private boolean logRequestResponse;
   private boolean createCommentsAsResolvableThreads;
+  private boolean useDraftNotes;
 
   private static final String DEFAULT_VIOLATION_TEMPLATE_MUSTACH =
       "/default-violation-template-gitlab.mustach";
@@ -209,9 +208,26 @@ public class ViolationCommentsToGitLabApi {
     if (Utils.isNullOrEmpty(this.commentTemplate)) {
       this.commentTemplate = this.getDefaultTemplate();
     }
-    final CommentsProvider commentsProvider =
+    final GitLabCommentsProvider commentsProvider =
         new GitLabCommentsProvider(this.violationsLogger, this);
     createComments(this.violationsLogger, this.violations, commentsProvider);
+    commentsProvider.flushPendingDraftNotes();
+  }
+
+  /**
+   * When {@code true}, single file comments ({@link #setCreateSingleFileComments(boolean)}) are
+   * created as GitLab Draft Notes and published together as a single review, via {@code POST
+   * .../draft_notes} followed by one {@code POST .../draft_notes/bulk_publish}, instead of each
+   * becoming its own immediately-visible discussion. See
+   * https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/issues/28
+   */
+  public ViolationCommentsToGitLabApi withUseDraftNotes(final boolean useDraftNotes) {
+    this.useDraftNotes = useDraftNotes;
+    return this;
+  }
+
+  public boolean getUseDraftNotes() {
+    return this.useDraftNotes;
   }
 
   private String getDefaultTemplate() {
