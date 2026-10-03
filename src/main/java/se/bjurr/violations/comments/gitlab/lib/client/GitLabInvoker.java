@@ -132,28 +132,18 @@ public class GitLabInvoker {
   }
 
   private String tokenHeaderName() {
-    switch (this.tokenType) {
-      case PRIVATE:
-        return "PRIVATE-TOKEN";
-      case JOB_TOKEN:
-        return "JOB-TOKEN";
-      case ACCESS:
-      case OAUTH2_ACCESS:
-      default:
-        return "Authorization";
-    }
+    return switch (this.tokenType) {
+      case PRIVATE -> "PRIVATE-TOKEN";
+      case JOB_TOKEN -> "JOB-TOKEN";
+      case ACCESS, OAUTH2_ACCESS -> "Authorization";
+    };
   }
 
   private String tokenHeaderValue() {
-    switch (this.tokenType) {
-      case PRIVATE:
-      case JOB_TOKEN:
-        return this.apiToken;
-      case ACCESS:
-      case OAUTH2_ACCESS:
-      default:
-        return "Bearer " + this.apiToken;
-    }
+    return switch (this.tokenType) {
+      case PRIVATE, JOB_TOKEN -> this.apiToken;
+      case ACCESS, OAUTH2_ACCESS -> "Bearer " + this.apiToken;
+    };
   }
 
   public GitLabResponse invoke(
@@ -189,8 +179,6 @@ public class GitLabInvoker {
                   ? BodyPublishers.noBody()
                   : BodyPublishers.ofString(jsonBody, UTF_8));
           break;
-        default:
-          throw new IllegalArgumentException("Unsupported http method: " + method);
       }
 
       final HttpResponse<String> response =
