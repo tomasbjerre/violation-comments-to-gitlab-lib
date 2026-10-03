@@ -1,3 +1,8 @@
+## 2.0.2 (2026-10-03)
+
+### Dependency updates
+
+- update plugin se.bjurr.gradle.bundle-jar to v2.4.1 (#33) ([ccc86](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/ccc861de78b4447) renovate[bot])  
 ## 2.0.0 (2026-09-19)
 
 ### Breaking changes
