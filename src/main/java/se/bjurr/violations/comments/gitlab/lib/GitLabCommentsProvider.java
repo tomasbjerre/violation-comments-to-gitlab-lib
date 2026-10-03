@@ -9,6 +9,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.IntStream;
 import se.bjurr.violations.comments.gitlab.lib.client.GitLabApiClient;
+import se.bjurr.violations.comments.gitlab.lib.client.model.DiffDto;
 import se.bjurr.violations.comments.gitlab.lib.client.model.DiffRefDto;
 import se.bjurr.violations.comments.gitlab.lib.client.model.DiscussionDto;
 import se.bjurr.violations.comments.gitlab.lib.client.model.MergeRequestDto;
@@ -286,7 +287,7 @@ public class GitLabCommentsProvider implements CommentsProvider {
   @SuppressFBWarnings("NP_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD")
   public List<ChangedFile> getFiles() {
     final List<ChangedFile> changedFiles = new ArrayList<>();
-    for (final var change : this.mergeRequestChanges.changes) {
+    for (final DiffDto change : this.mergeRequestChanges.changes) {
       final String filename = change.newPath;
       final List<String> specifics = new ArrayList<>();
       specifics.add(change.diff);
