@@ -1,3 +1,11 @@
+## 2.0.3 (2026-10-24)
+
+### Dependency updates
+
+- update dependency tools.jackson.core:jackson-databind to v3.2.4 (#38) ([4ebba](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/4ebba33d2c352f1) renovate[bot])  
+- update dependency gradle to v9.8.2 (#37) ([6a2d2](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/6a2d2ae1ff9fe8c) renovate[bot])  
+- update dependency gradle to v9.8.1 (#36) ([f0f60](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/f0f60e5c11dc907) renovate[bot])  
+- update dependency se.bjurr.violations:violation-comments-lib to v1.111.2 (#34) ([539aa](https://github.com/tomasbjerre/violation-comments-to-gitlab-lib/commit/539aa8f487ba2be) renovate[bot])  
 ## 2.0.2 (2026-10-03)
 
 ### Dependency updates
